@@ -1,0 +1,1515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Twow-like Beast Sheet</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #16213e, #0f3460);
+      border-bottom: 2px solid #c8a84b;
+      padding: 24px 32px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      color: #c8a84b;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      color: #aaa;
+      margin-top: 4px;
+      font-size: 0.9rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 20px 32px;
+      background: #16213e;
+      border-bottom: 1px solid #2a2a4a;
+      align-items: center;
+    }
+
+    .controls input, .controls select {
+      background: #0f1b35;
+      border: 1px solid #2a4a7a;
+      color: #e0e0e0;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .controls input:focus, .controls select:focus {
+      border-color: #c8a84b;
+    }
+
+    .controls input[type="text"] { width: 220px; }
+
+    .controls label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: #aaa;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .controls label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #c8a84b;
+      cursor: pointer;
+    }
+
+    .count {
+      margin-left: auto;
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .table-wrap {
+      padding: 0 32px 40px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 0.88rem;
+    }
+
+    thead th {
+      background: #0f3460;
+      color: #c8a84b;
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      white-space: nowrap;
+      user-select: none;
+      border-bottom: 2px solid #c8a84b44;
+      position: sticky;
+      top: 0;
+    }
+
+    thead th:hover { background: #1a4a80; }
+
+    thead th .sort-arrow {
+      display: inline-block;
+      width: 14px;
+      text-align: center;
+      opacity: 0.4;
+      font-size: 0.75rem;
+      margin-left: 4px;
+    }
+
+    thead th.sorted .sort-arrow { opacity: 1; color: #c8a84b; }
+
+    tbody tr {
+      border-bottom: 1px solid #1e2a45;
+      transition: background 0.1s;
+    }
+
+    tbody tr:hover { background: #1e2a45; }
+
+    tbody tr:nth-child(even) { background: #131a30; }
+    tbody tr:nth-child(even):hover { background: #1e2a45; }
+
+    td {
+      padding: 9px 14px;
+      vertical-align: middle;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .check-yes { background: #1a4a2a; color: #4caf50; }
+    .check-no  { background: #2a1a1a; color: #888; }
+    .rare-badge { background: #2a2040; color: #b088ff; margin-left: 4px; }
+    .elite-badge { background: #2a1a00; color: #ffa040; margin-left: 4px; }
+    .untameable-badge { background: #3a1a1a; color: #ff6060; margin-left: 4px; }
+    .rare-elite-badge { background: #2a1a30; color: #d080ff; margin-left: 4px; }
+    .summon-badge { background: #0a2a2a; color: #40d0c0; margin-left: 4px; }
+    .elite-summon-badge { background: #0a1a2a; color: #40a0ff; margin-left: 4px; }
+
+    .beast-link { cursor: pointer; color: #c8a84b; text-decoration: underline; text-decoration-color: #c8a84b44; text-underline-offset: 2px; }
+    .beast-link:hover { text-decoration-color: #c8a84b; }
+    .map-link { cursor: pointer; font-size: 0.85rem; opacity: 0.7; transition: opacity 0.15s; }
+    .map-link:hover { opacity: 1; }
+
+    #img-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px;
+    }
+    #img-modal.open { display: flex; }
+    #img-modal img { max-width: 90vw; max-height: 80vh; border-radius: 8px; border: 2px solid #c8a84b44; object-fit: contain; }
+    #img-modal-title { color: #c8a84b; font-size: 0.95rem; }
+    #img-modal-close { position: absolute; top: 16px; right: 20px; background: none; border: none; color: #aaa; font-size: 1.8rem; cursor: pointer; line-height: 1; }
+    #img-modal-close:hover { color: #fff; }
+    .custom-badge { background: #1a2a10; color: #80d040; margin-left: 4px; }
+
+    .type-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .level-range { color: #aaa; }
+    .level-range .level-num { color: #c8a84b; font-weight: 600; }
+
+    .abilities { color: #90c0ff; font-size: 0.83rem; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #555;
+    }
+
+    .empty-state span { font-size: 2rem; display: block; margin-bottom: 12px; }
+
+    /* Type colors */
+    .type-bat          { background: #2a1f3a; color: #c088ff; }
+    .type-bear         { background: #2a1f10; color: #d4844a; }
+    .type-boar         { background: #281e12; color: #c8944a; }
+    .type-carrion      { background: #1e2218; color: #8ab060; }
+    .type-cat          { background: #2a1a22; color: #ff90b0; }
+    .type-crab         { background: #102228; color: #40b8c0; }
+    .type-crocolisk    { background: #102218; color: #50c060; }
+    .type-fox          { background: #2a1e0e; color: #e09840; }
+    .type-gorilla      { background: #1a1a1a; color: #a0a0a0; }
+    .type-hyena        { background: #1e1e10; color: #c0b840; }
+    .type-moth         { background: #22102a; color: #e070f0; }
+    .type-owl          { background: #10181e; color: #60a8d0; }
+    .type-raptor       { background: #1a2210; color: #80c040; }
+    .type-scorpid      { background: #200c00; color: #e07020; }
+    .type-serpent      { background: #0c1e10; color: #40d080; }
+    .type-spider       { background: #0e0e1a; color: #8888ff; }
+    .type-tallstrider  { background: #10201a; color: #40c090; }
+    .type-turtle       { background: #101a10; color: #60d060; }
+    .type-wolf         { background: #1a1e24; color: #90a8c8; }
+    .type-wind         { background: #0c1828; color: #60b8f0; }
+    .type-other        { background: #1e1e1e; color: #888888; }
+
+    .page-tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .page-tab {
+      background: transparent;
+      border: 1px solid #c8a84b66;
+      color: #aaa;
+      padding: 6px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-family: inherit;
+      transition: all 0.15s;
+    }
+
+    .page-tab:hover { border-color: #c8a84b; color: #c8a84b; }
+    .page-tab.active { background: #c8a84b; border-color: #c8a84b; color: #1a1a2e; font-weight: 700; }
+
+    /* Pet Changes page */
+    .pc-section {
+      margin-bottom: 36px;
+    }
+
+    .pc-section h2 {
+      color: #c8a84b;
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #2a2a4a;
+    }
+
+    .pc-section h3 {
+      color: #90c0ff;
+      font-size: 0.9rem;
+      margin: 14px 0 8px;
+    }
+
+    .pc-section ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pc-section ul li {
+      padding: 8px 12px;
+      background: #131a30;
+      border-radius: 6px;
+      border-left: 3px solid #2a4a7a;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .pc-section ul li strong { color: #c8a84b; }
+
+    .pc-cards {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .pc-card {
+      background: #131a30;
+      border: 1px solid #2a4a7a;
+      border-radius: 8px;
+      padding: 16px;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .pc-card h3 { color: #e0e0e0; font-size: 0.95rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .pc-card p { font-size: 0.84rem; color: #aaa; line-height: 1.5; margin-top: 8px; }
+    .pc-card p strong { color: #c8a84b; }
+
+    .pc-stats {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .pc-stats span {
+      background: #0f3460;
+      color: #90c0ff;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .pc-ability-tag {
+      background: #2a1f3a;
+      color: #c088ff;
+      font-size: 0.72rem;
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-weight: 400;
+    }
+
+    @media (max-width: 700px) {
+      header { padding: 16px; }
+      .controls { padding: 12px 16px; }
+      .table-wrap { padding: 0 8px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Twow-like Beast Sheet</h1>
+  <p>Tameable hunter pets &mdash; compiled from community data. Credits: Destroses / hunter channel of the TWoW Discord.</p>
+  <div class="page-tabs">
+    <button class="page-tab active" onclick="showPage('beasts')">Beast Sheet</button>
+    <button class="page-tab" onclick="showPage('petchanges')">Pet Changes</button>
+  </div>
+</header>
+
+<div id="page-beasts">
+<div class="controls">
+  <input type="text" id="search" placeholder="Search ability, name or location…">
+
+  <select id="typeFilter">
+    <option value="">All Types</option>
+  </select>
+
+  <select id="locationFilter">
+    <option value="">All Locations</option>
+  </select>
+
+  <select id="levelFilter">
+    <option value="">Any Level</option>
+    <option value="1-10">1 – 10</option>
+    <option value="11-20">11 – 20</option>
+    <option value="21-30">21 – 30</option>
+    <option value="31-40">31 – 40</option>
+    <option value="41-50">41 – 50</option>
+    <option value="51-60">51 – 60</option>
+    <option value="61+">61+</option>
+  </select>
+
+  <label>
+    <input type="checkbox" id="verifiedOnly">
+    1.18 Verified only
+  </label>
+
+  <label>
+    <input type="checkbox" id="hideUntameable" checked>
+    Hide untameable
+  </label>
+
+  <span class="count" id="count"></span>
+</div>
+
+<div class="table-wrap">
+  <table id="beastTable">
+    <thead>
+      <tr>
+        <th data-col="name">Name <span class="sort-arrow">↕</span></th>
+        <th data-col="type">Type <span class="sort-arrow">↕</span></th>
+        <th data-col="atkspeed">Atk Speed <span class="sort-arrow">↕</span></th>
+        <th data-col="abilities">Innate Abilities <span class="sort-arrow">↕</span></th>
+        <th data-col="location">Location <span class="sort-arrow">↕</span></th>
+        <th data-col="minlevel">Min Lvl <span class="sort-arrow">↕</span></th>
+        <th data-col="maxlevel">Max Lvl <span class="sort-arrow">↕</span></th>
+        <th data-col="verified">1.18 ✓ <span class="sort-arrow">↕</span></th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <span>🐾</span>No beasts match your filters.
+  </div>
+</div>
+</div><!-- end page-beasts -->
+
+<div id="img-modal" onclick="if(event.target===this)closeImg()">
+  <button id="img-modal-close" onclick="closeImg()">✕</button>
+  <div id="img-modal-title"></div>
+  <img id="img-modal-img" src="" alt="">
+</div>
+
+<div id="page-petchanges" style="display:none; padding: 32px; max-width: 900px; margin: 0 auto;">
+  <p style="color:#888; font-size:0.85rem; margin-bottom:24px;">Info taken from the patch 1.17.2 forum post.</p>
+
+  <section class="pc-section">
+    <h2>Pet Ability Value Changes</h2>
+    <ul>
+      <li><strong>Furious Howl</strong> — Focus cost reduced from 60 to 50, and range increased from 15 to 40.</li>
+      <li><strong>Thunderstomp</strong> — Cooldown reduced from 1 minute to 40 seconds. 1.5× threat modifier added.</li>
+      <li><strong>Scorpid Poison</strong> — Focus cost reduced from 30 to 25. Cooldown reduced from 4s to 3s. Base damage increased by 20%.</li>
+      <li><strong>Shell Shield</strong> — Attack speed reduction reduced from 43% to 35%.</li>
+      <li><strong>Bite</strong> — Cooldown reduced from 10 seconds to 6 seconds.</li>
+      <li><strong>Screech</strong> — Now has a 5 second cooldown.</li>
+      <li><strong>Growl</strong> — Now costs 10 Focus, down from 15.</li>
+      <li><strong>Dash</strong> — Added to Raptors.</li>
+    </ul>
+  </section>
+
+  <section class="pc-section">
+    <h2>Pet Ability Rank Additions</h2>
+    <ul>
+      <li><strong>Charge (Boar)</strong> — Rank 4 added.</li>
+      <li><strong>Lightning Breath</strong> — Rank 1 added.</li>
+      <li><strong>Thunderstomp</strong> — Rank 4 added.</li>
+    </ul>
+  </section>
+
+  <section class="pc-section">
+    <h2>Pet Scaling Values <span style="font-weight:400; font-size:0.85rem; color:#888;">(mostly relevant for BM hunters via Spirit Bond Talent)</span></h2>
+    <h3>Spell Power Scaling</h3>
+    <ul>
+      <li><strong>Poison Spit (Serpent)</strong> — 0.25 per tick.</li>
+      <li><strong>Lightning Breath (Wind Serpent)</strong> — 0.5.</li>
+      <li><strong>Scorpid Poison (Scorpid)</strong> — 0.1 per tick (totalling 0.5 at 5 stacks).</li>
+      <li><strong>Thunderstomp (Gorilla)</strong> — 0.21.</li>
+    </ul>
+    <h3>Attack Power Scaling</h3>
+    <ul>
+      <li><strong>Bite</strong> — 1 damage per 20 Attack Power.</li>
+      <li><strong>Claw</strong> — 1 damage per 42 Attack Power.</li>
+      <li><strong>Screech</strong> — 1 damage per 25 Attack Power.</li>
+      <li><strong>Furious Howl</strong> — 1 damage per 25 Attack Power.</li>
+      <li><strong>Charge (Boar)</strong> — Grants additional Attack Power equal to 35% of the boar's Attack Power.</li>
+    </ul>
+    <h3>Other</h3>
+    <ul>
+      <li>Pets now benefit from <strong>Windfury Totem</strong>.</li>
+    </ul>
+  </section>
+
+  <section class="pc-section">
+    <h2>New Pet Families</h2>
+    <div class="pc-cards">
+      <div class="pc-card">
+        <h3>Serpent <span class="pc-ability-tag">Cobra</span></h3>
+        <div class="pc-stats">
+          <span>DMG ×1.135</span><span>Armor ×1.03</span><span>HP ×1.03</span>
+        </div>
+        <p><strong>Poison Spit</strong> — Ranged DoT. Lasts 8 seconds. 8 second cooldown.</p>
+      </div>
+      <div class="pc-card">
+        <h3>Fox</h3>
+        <div class="pc-stats">
+          <span>DMG ×1.07</span><span>Armor ×1.0</span><span>HP ×1.0</span>
+        </div>
+        <p><strong>Grace</strong> — Increases dodge by 30% for 12 seconds.</p>
+      </div>
+      <div class="pc-card">
+        <h3>Moth</h3>
+        <div class="pc-stats">
+          <span>DMG ×?</span><span>Armor ×?</span><span>HP ×?</span>
+        </div>
+        <p><strong>Pollen Burst</strong> — Heals party for 308–338 and reduces enemy attack speed by 20% for 8 seconds. 30 sec cooldown. 25% spell power scaling.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="pc-section">
+    <h2>New Base Pet Family Abilities</h2>
+    <ul>
+      <li><strong>Bear</strong> — Reduces party damage taken by 8% and increases damage dealt by 3%. 50 focus. 12 second duration. 2 minute cooldown.</li>
+      <li><strong>Crab</strong> — Absorbs 335 damage; on breaking or expiration, deals 72–84 damage to nearby enemies. 20 focus. 8 second duration. 30 second cooldown.</li>
+      <li><strong>Crocolisk</strong> — Slows target by 80% and deals 60 damage every 0.5s over 2.5s. Deals 25% more damage below 35% health. 50 focus. 30 second cooldown.</li>
+      <li><strong>Hyena</strong> — Summons another hyena to assist for 20 seconds, mirroring all pet commands. 50 focus. 1.2 minute cooldown.</li>
+      <li><strong>Raptor</strong> — Deals 27–36 damage and applies a bleed for 64 damage over 4 seconds (crits extend bleed by 1 second). 35 focus. 10 second cooldown.</li>
+      <li><strong>Spider</strong> — 2 second root, followed by 60% slow for 2 seconds. 50 focus. 1 minute cooldown.</li>
+      <li><strong>Tallstrider</strong> — 20% HP and 10% mana regen aura for the party.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+const RAW = [
+  // ── Bats ──
+  ["Dark Screecher","Bat","2","Dive 3, Screech 3","Blackrock Depths","50","52","FALSE"],
+  ["Plaguebat","Bat","2","Cower 5, Dive 3","Eastern Plaguelands","53","55","FALSE"],
+  ["Monstrous Plaguebat","Bat","2","Cower 6, Screech 4","Eastern Plaguelands","55","58","FALSE"],
+  ["Noxious Plaguebat","Bat","2","Cower 5","Eastern Plaguelands","54","56","FALSE"],
+  ["Greater Vilewing Bat","Bat","2","None","Gilneas","43","45","FALSE"],
+  ["Vilewing Bat","Bat","2","None","Gilneas","42","44","FALSE"],
+  ["Vilewing Batling","Bat","2","None","Gilneas","39","40","FALSE"],
+  ["Kraul Bat (E)","Bat","2","Cower 3, Dive 1","Razorfen Kraul","30","31","FALSE"],
+  ["Greater Kraul Bat (E)","Bat","2","Cower 3, Dive 1","Razorfen Kraul","32","32","FALSE"],
+  ["Blind Hunter (RE)","Bat","2","None","Razorfen Kraul","32","32","FALSE"],
+  ["Vile Bat (E)","Bat","2","None","Shadowfang Keep","22","23","FALSE"],
+  ["Blood Seeker (E)","Bat","2","None","Shadowfang Keep","23","24","FALSE"],
+  ["Duskbat","Bat","2","None","Tirisfal Glades","1","2","FALSE"],
+  ["Mangy Duskbat","Bat","2","None","Tirisfal Glades","3","4","FALSE"],
+  ["Greater Duskbat","Bat","2","Cower 1","Tirisfal Glades","6","7","FALSE"],
+  ["Vampiric Duskbat","Bat","2","None","Tirisfal Glades","8","9","FALSE"],
+  ["Ressan the Needler (R)","Bat","2","None","Tirisfal Glades","11","11","FALSE"],
+  ["Shrike Bat (E)","Bat","2","Cower 4, Dive 1, Screech 2","Uldaman","38","39","FALSE"],
+  ["Bloodseeker Bat","Bat","1","None","Zul'Gurub","60","60","FALSE"],
+  ["Frenzied Bloodseeker Bat","Bat","1","None","Zul'Gurub","60","60","FALSE"],
+  ["Enraged Sharpclaw","Bear","2","None","Cresent Grove","33","33","FALSE"],
+  ["Tirisfal Plagued Bear","Bear","2.5","Claw 2","Tirisfal Glades","7","9","FALSE"],
+  ["Tirisclaw Bear","Bear","2","Claw 3","Tirisfal Highlands","15","18","FALSE"],
+  ["Tirisclaw Cub","Bear","2","Claw 3","Tirisfal Highlands","13","14","FALSE"],
+  ["Goldpelt Grizzly","Bear","2","Roar of Fortitude","Northwind","31","32","TRUE"],
+  ["Goldpelt Bear","Bear","2","Roar of Fortitude","Northwind","28","30","TRUE"],
+  ["Bruno (R)","Bear","2","Roar of Fortitude","Northwind","34","34","TRUE"],
+  ["Hightusk Boar","Boar","2","Charge 4","Arathi Highlands","33","34","FALSE"],
+  ["Forest Boar","Boar","2","None","Hillsbrad Foothills","23","25","FALSE"],
+  ["Elder Forest Boar","Boar","2","None","Hillsbrad Foothills","26","27","FALSE"],
+  ["Bristleback Boar","Boar","1.9","None","Mulgore","9","10","FALSE"],
+  ["Elder Thalassian Boar","Boar","2","Charge 1","Thalassian Highlands","5","7","FALSE"],
+  ["Thalassian Boar","Boar","2","None","Thalassian Highlands","2","3","FALSE"],
+  ["Young Thalassian Boar","Boar","2","None","Thalassian Highlands","1","2","FALSE"],
+  ["Cragtusk Boar","Boar","2","Charge 2","Tirisfal Highlands","14","17","FALSE"],
+  ["Mesa Boar","Boar","2","None","Thousand Needles","21","23","FALSE"],
+  ["Burly Goldbristle Boar","Boar","2","None","Northwind","29","30","TRUE"],
+  ["Goldbristle Boar","Boar","2","None","Northwind","29","30","TRUE"],
+  ["Young Goldbristle Boar","Boar","2","None","Northwind","26","28","TRUE"],
+  ["Stonehide Boar","Boar","2","None","Grim Reaches","32","34","TRUE"],
+  ["Elder Stonehide Boar","Boar","2","None","Grim Reaches","37","38","TRUE"],
+  ["Goldtusk (R)","Boar","2","None","Northwind","34","34","TRUE"],
+  ["Stormwing Buzzard","Carrion Bird","2","None","Balor","27","28","TRUE"],
+  ["Stormwing Vulture","Carrion Bird","2","None","Balor","30","31","TRUE"],
+  ["Ashfeather Scavenger","Carrion Bird","2","None","Blackstone Island","3","3","TRUE"],
+  ["Ashfeather Buzzard","Carrion Bird","2","None","Blackstone Island","4","6","TRUE"],
+  ["Ashfeather Swooper","Carrion Bird","2","None","Blackstone Island","5","7","TRUE"],
+  ["Darksaber","Cat","2","None","Feralas","42","44","FALSE"],
+  ["Junglepaw Panther","Cat","2","Cower 5, Prowl 3","Gillijim's Isle","48","50","FALSE"],
+  ["Junglepaw Shadow Panther","Cat","2","Cower 5, Prowl 3","Gillijim's Isle","51","53","FALSE"],
+  ["Bengal Alpha","Cat","1.5","Cower 6","Lapidis Isle","53","54","FALSE"],
+  ["Bengal Matriarch","Cat","1.5","Cower 6","Lapidis Isle","49","51","FALSE"],
+  ["Bengal Tiger","Cat","1.5","Cower 6","Lapidis Isle","52","53","FALSE"],
+  ["Hazzuri Tiger","Cat","2","Cower 5, Prowl 3","Lapidis Isle","50","50","FALSE"],
+  ["Young Bengal Tiger","Cat","2","Cower 5, Prowl 3","Lapidis Isle","48","49","FALSE"],
+  ["Bright Lynx","Cat","2","None","Thalassian Highlands","5","6","FALSE"],
+  ["Bright Lynx Matriarch","Cat","2","None","Thalassian Highlands","6","7","FALSE"],
+  ["Crimson Lynx","Cat","2","Claw 1","Thalassian Highlands","3","4","FALSE"],
+  ["Elder Crimson Lynx","Cat","2","None","Thalassian Highlands","6","8","FALSE"],
+  ["Shar'lan","Cat","2","Bite 2","Thalassian Highlands","8","8","FALSE"],
+  ["Young Crimson Lynx","Cat","2","None","Thalassian Highlands","1","2","FALSE"],
+  ["Sorrowclaw","Cat","1.5","Dash 2","Swamp of Sorrows","41","41","FALSE"],
+  ["Silver Coast Crawler","Crab","2","Claw 7, Bubble Barrier 3","Gillijim's Isle","50","52","TRUE"],
+  ["Strand Crawler","Crab","2","Claw 7, Bubble Barrier 3","Gillijim's Isle","48","49","TRUE"],
+  ["Bright Crawler","Crab","2","Claw 6, Bubble Barrier 3","Lapidis Isle","52","53","TRUE"],
+  ["Island Pincer","Crab","2","Claw 7, Bubble Barrier 3","Lapidis Isle","48","50","TRUE"],
+  ["Rock Crawler","Crab","2","Claw 7, Bubble Barrier 3","Lapidis Isle","49","51","TRUE"],
+  ["Rockshell Crawler","Crab","2","Claw 8, Bubble Barrier 4","Tel'abim","55","57","TRUE"],
+  ["Sandshell Crawler","Crab","2","Claw 7, Bubble Barrier 3","Tel'abim","53","54","TRUE"],
+  ["Farstride Crawler","Crab","2","None","Thalassian Highlands","6","8","FALSE"],
+  ["Muckreef Crawler","Crab","2","Claw 2","Blackstone Island","7","8","TRUE"],
+  ["Young Muckreef Crawler","Crab","2","Claw 1","Blackstone Island","3","4","TRUE"],
+  ["Saltsnap Crocolisk","Crocolisk","2","Bite 6, Death Roll 5","Gillijim's Isle","49","51","TRUE"],
+  ["Sorrowmore Crocolisk","Crocolisk","2","None","Balor","30","31","TRUE"],
+  ["Giant Razortooth Crocolisk","Crocolisk","2","Death Roll 3","Grim Reaches","36","37","TRUE"],
+  ["Razortooth Crocolisk","Crocolisk","2","Death Roll 3","Grim Reaches","33","34","TRUE"],
+  ["Mist Fox","Fox","2","Bite 7, Grace 1","Deadwind Pass","50","51","FALSE"],
+  ["Young Arctic Fox","Fox","2","Bite 1","Dun Morogh","7","8","FALSE"],
+  ["Silver Fox","Fox","1.3","Grace 1","Duskwood","27","28","FALSE"],
+  ["Red Fox","Fox","2","Grace 1","Loch Modan","10","11","FALSE"],
+  ["Young Mist Fox","Fox","2","Grace 1","Silverpine Forest","10","11","FALSE"],
+  ["Thalassian Fox","Fox","2","Bite 1","Thalassian Highlands","7","8","FALSE"],
+  ["Young Brown Fox","Fox","2","Grace 1","Westfall","10","11","FALSE"],
+  ["Spirit Fox (rare)","Fox","1.2","Grace 1","Winterspring","53","53","FALSE"],
+  ["Jungleback Stomper","Gorilla","2","None","Lapidis Isle","50","50","FALSE"],
+  ["Jungleback Thrasher","Gorilla","2","Thunderstomp 3","Lapidis Isle","52","54","FALSE"],
+  ["Elder Highvale Gorilla","Gorilla","1.5","Thunderstomp 4","Tel'abim","57","59","FALSE"],
+  ["Highvale Chimpanzee","Gorilla","2","None","Tel'abim","53","54","FALSE"],
+  ["Highvale Gorilla","Gorilla","2","None","Tel'abim","56","57","FALSE"],
+  ["Highvale Monkey","Gorilla","2","None","Tel'abim","53","54","FALSE"],
+  ["King Morogo Thunderfoot","Gorilla","2","None","Tel'abim","60","60","FALSE"],
+  ["Highvale Thunderer","Gorilla","2.8","None","Tel'abim","56","58","FALSE"],
+  ["Highvale Silverback (rare)","Gorilla","1.5","Thunderstomp 4","Tel'abim","58","58","FALSE"],
+  ["Soothound (Untameable)","Hyena","2","None","Searing Gorge","51","51","TRUE"],
+  ["Ashpaw Hyena","Hyena","2","None","Blackstone Island","5","6","TRUE"],
+  ["Ashpaw Hunter","Hyena","2","Bite 2","Blackstone Island","7","8","TRUE"],
+  ["Amani Eagle","Owl","2","Screech 1, Claw 2","Amani'Alor / Stonetalon Mountains","10","12","FALSE"],
+  ["Greathorn Hunter","Owl","2","Screech 4","Hyjal","60","61","FALSE"],
+  ["Greathorn Owl","Owl","2","Screech 4","Hyjal","58","60","FALSE"],
+  ["Hinterlands Eagle","Owl","2","Dive 2, Screech 3","The Hinterlands","35","40","FALSE"],
+  ["Venomhide Ravasaur","Raptor","1.5","None","Un'goro Crater","50","51","TRUE"],
+  ["Grimscale Raptor","Raptor","2","Savage Rend 3","Grim Reaches","31","33","TRUE"],
+  ["Grimscale Screecher","Raptor","2","None","Grim Reaches","33","34","TRUE"],
+  ["Grimscale Thrasher","Raptor","2","Savage Rend 4","Grim Reaches","35","36","TRUE"],
+  ["Ravasaur","Raptor","1.5","Savage Rend 5","Un'goro Crater","48","50","TRUE"],
+  ["Ravasaur Hunter","Raptor","1.5","Savage Rend 5","Un'goro Crater","49","50","TRUE"],
+  ["Lar'Korwi","Raptor","1.5","Savage Rend 5","Un'goro Crater","56","56","TRUE"],
+  ["Ravasaur Runner","Raptor","1.5","None","Un'goro Crater","49","50","TRUE"],
+  ["Lar'Korwi Mate","Raptor","1.5","None","Un'goro Crater","49","50","TRUE"],
+  ["Stonetail Scorpid","Scorpid","2","None","Blackstone Island","4","6","TRUE"],
+  ["Stonetail Lasher","Scorpid","2","None","Blackstone Island","6","7","TRUE"],
+  ["Blackvenom Scorpid","Scorpid","2","Scorpid Poison 1","Blackstone Island","7","8","TRUE"],
+  ["Murk Slitherer","Serpent (cobra)","2","Poison Spit 2","Sunken Temple","45","46","FALSE"],
+  ["Murk Spitter","Serpent (cobra)","2","Poison Spit 2","Sunken Temple","46","46","FALSE"],
+  ["Brushtail Adder","Serpent (cobra)","2","Poison Spit 2, Bite 7","Tel'abim","53","54","FALSE"],
+  ["Brushtail Cobra","Serpent (cobra)","2","Poison Spit 2, Bite 8","Tel'abim","55","56","FALSE"],
+  ["Deviate Viper","Serpent (cobra)","2","Poison Spit 1","Wailing Caverns","19","20","TRUE"],
+  ["Deviate Adder","Serpent (cobra)","2","Poison Spit 1","Wailing Caverns","18","19","TRUE"],
+  ["Sandfury Guardian","Serpent (cobra)","1.7","Poison Spit 2","Zul'Farrak","45","46","FALSE"],
+  ["Razzashi Serpent","Serpent (cobra)","2","Poison Spit 3","Zul'Gurub","60","60","FALSE"],
+  ["Razzashi Adder","Serpent (cobra)","1.4","Poison Spit 3","Zul'Gurub","60","60","FALSE"],
+  ["Hollow Web Spider","Spider","2","None","Gilneas","42","44","TRUE"],
+  ["Hollow Web Venomspitter","Spider","2","None","Gilneas","42","45","TRUE"],
+  ["Duskskitterer (rare)","Spider","1.29","None","Gilneas","44","44","FALSE"],
+  ["Mistbark Spider","Spider","2","None","Balor","29","31","TRUE"],
+  ["Mistbark Webweaver","Spider","2","None","Balor","30","32","TRUE"],
+  ["Mother Mistbark","Spider","1.5","None","Balor","32","32","TRUE"],
+  ["Brown Recluse","Spider","2","Web","Grim Reaches","35","36","TRUE"],
+  ["Greater Brown Recluse","Spider","2","None","Grim Reaches","39","40","TRUE"],
+  ["Skitterweb Crawler (E)","Spider","2","None","Lower Karazhan Halls","60","60","FALSE"],
+  ["Cavernweb Spider (E)","Spider","2","None","Dragonmaw Retreat","","","TRUE"],
+  ["Cavernweb Venomspitter (E)","Spider","2","None","Dragonmaw Retreat","","","TRUE"],
+  ["Cavernweb Creeper (E)","Spider","2","Web","Dragonmaw Retreat","","","TRUE"],
+  ["Cavernweb Broodmother (E)","Spider","2","None","Dragonmaw Retreat","","","TRUE"],
+  ["Moonfeather (untameable)","Tallstrider","1.4","None","Thalassian Highlands","9","9","FALSE"],
+  ["Crimson Hawkstrider","Tallstrider","2","None","Thalassian Highlands","7","8","FALSE"],
+  ["Forest Hawkstrider","Tallstrider","2","Bite 1","Thalassian Highlands","3","4","FALSE"],
+  ["Ivory Hawkstrider","Tallstrider","2","None","Thalassian Highlands","5","7","FALSE"],
+  ["Deepshell Snapper","Turtle","2","None","Gillijim's Isle","51","52","FALSE"],
+  ["Sickly Clearwater Snapjaw","Turtle","2","None","Grim Reaches","35","36","TRUE"],
+  ["Clearwater Snapjaw","Turtle","2","None","Grim Reaches","32","33","TRUE"],
+  ["Venomous Jungle Serpent","Wind Serpent","2","Lightning Breath 5","Gillijim's Isle","51","53","FALSE"],
+  ["Venomflayer Screecher","Wind Serpent","2","Lightning Breath 5","Tel'abim","53","55","FALSE"],
+  ["Venomflayer Serpent (untameable)","Wind Serpent","2","TBD","Tel'abim","57","58","FALSE"],
+  ["Brilliant Mana Wyrm","Wind Serpent","2","Lightning Breath 1","Thalassian Highlands","6","7","FALSE"],
+  ["Emerald Mana Wyrm","Wind Serpent","2","Lightning Breath 1","Thalassian Highlands","6","7","FALSE"],
+  ["Lavender Mana Wyrm","Wind Serpent","2","Lightning Breath 1","Thalassian Highlands","8","8","FALSE"],
+  ["Dawnhowl (rare)","Wolf","2","None","Gilneas","40","40","FALSE"],
+  ["Duskpelt Prowler","Wolf","2","Bite 6","Gilneas","39","41","FALSE"],
+  ["Duskpelt Stalker","Wolf","2","Bite 6","Gilneas","41","43","FALSE"],
+  ["Starving Duskpelt","Wolf","2","None","Gilneas","43","45","FALSE"],
+  ["Bayne (rare)","Wolf","2","None","Tirisfal Glades","10","10","FALSE"],
+  ["Cursed Darkhound","Wolf","2","None","Tirisfal Glades","7","8","FALSE"],
+  ["Decrepit Darkhound","Wolf","2","None","Tirisfal Glades","5","6","FALSE"],
+  ["Ravenous Darkhound","Wolf","2","None","Tirisfal Glades","9","10","FALSE"],
+  ["Graypaw Wolf","Wolf","2","None","Tirisfal Highlands","16","18","FALSE"],
+  ["Graypaw Alpha (rare)","Wolf","2","None","Tirisfal Highlands","18","18","FALSE"],
+  ["Slavering Crag Coyote","Wolf","2","None","Balor","30","32","TRUE"],
+  ["Ragged Crag Coyote","Wolf","2","None","Balor","28","30","TRUE"],
+  ["Timber Wolf Alpha","Wolf","2","None","Northwind","31","32","TRUE"],
+  ["Elder Timber Wolf","Wolf","2","None","Northwind","29","30","TRUE"],
+  ["Young Timber Wolf","Wolf","2","None","Northwind","26","28","TRUE"],
+  ["Nightpelt Grizzly","Bear","2","Bite 7","Moonwhisper Coast","52","53","TRUE"],
+  ["Moonstrider Fledgling","Tallstrider","2","Cower 5","Moonwhisper Coast","51","52","TRUE"],
+  ["Moonsilk Moth","Moth","2","Bite 7, Pollen Burst","Moonwhisper Coast","53","54","TRUE"],
+  ["Moonsilk Spinner","Moth","2","Bite 7, Pollen Burst","Moonwhisper Coast","53","54","TRUE"],
+  ["Nightpelt Ursa","Bear","2","Bite 7, Roar of Fortitude","Moonwhisper Coast","53","54","TRUE"],
+  ["Moonstrider Rooster","Tallstrider","2","Bite 7, Cower 5","Moonwhisper Coast","53","54","TRUE"],
+  ["Moonstrider Matriarch","Tallstrider","2","Bite 7, Strider Pressence","Moonwhisper Coast","53","54","TRUE"],
+  ["Duskpaw Huntress","Cat","2","Bite 7","Moonwhisper Coast","56","57","TRUE"],
+  ["Frenzied Dustwing","Moth","2","Bite 7, Pollen Burst","Moonwhisper Coast","56","57","TRUE"],
+  ["Withered Companion (E)","Owl","2","None","Moonwhisper Coast","56","56","TRUE"],
+  ["Frostmane Leopard (E)","Cat","2","None","Frostmane Hollow","13","15","TRUE"],
+  ["Tamed Ice Claw Bear (E)","Bear","2","Claw 1","Frostmane Hollow","14","15","TRUE"],
+  ["Rocktail Scorpid (E)","Scorpid","2","None","Windhorn Canyon","24","25","TRUE"],
+  ["Venomous Cloudstalker (E)","Wind Serpent","2","None","Windhorn Canyon","24","25","TRUE"],
+  ["Ahgk'tos the Pure (E)","Wind Serpent","2","None","Windhorn Canyon","24","24","TRUE"],
+  ["Old Whispershell (R)","Turtle","2","??","Moonwhisper Coast","52","52","FALSE"],
+  ["Bramblethorn Boar","Boar","2","??","Stonetalon Mountains","16","16","FALSE"],
+  // ── Bears (additional) ──
+  ["Ursol'lok (R)","Bear","1.39","None","Ashenvale","31","31","TRUE"],
+  ["Elder Ashenvale Bear","Bear","2","Claw 4","Ashenvale","25","26","TRUE"],
+  ["Giant Ashenvale Bear","Bear","2","Roar of Fortitude","Ashenvale","29","30","TRUE"],
+  ["Ashenvale Bear","Bear","2","Claw 3","Ashenvale","21","22","TRUE"],
+  ["Thistle Cub","Bear","2","None","Darkshore","9","10","FALSE"],
+  ["Thistle Bear","Bear","2","Claw 2","Darkshore","11","12","FALSE"],
+  ["Grizzled Thistle Bear","Bear","2","None","Darkshore","16","17","FALSE"],
+  ["Den Mother","Bear","2","Claw 3","Darkshore","18","19","FALSE"],
+  ["Young Black Bear","Bear","2","None","Dun Morogh","5","6","FALSE"],
+  ["Black Bear","Bear","2.5","None","Dun Morogh","6","7","FALSE"],
+  ["Ice Claw Bear","Bear","2","Claw 1","Dun Morogh","7","8","FALSE"],
+  ["Mangeclaw","Bear","2","Claw 2","Dun Morogh","11","11","FALSE"],
+  ["Bjarn (R)","Bear","2","Claw 2","Dun Morogh","12","12","FALSE"],
+  ["Young Forest Bear","Bear","2.5","Claw 2","Elwynn Forest","8","9","TRUE"],
+  ["Mongress (R)","Bear","2","Claw 7","Felwood","50","50","TRUE"],
+  ["Angerclaw Bear","Bear","2","None","Felwood","47","48","TRUE"],
+  ["Angerclaw Mauler","Bear","2","Claw 7, Roar of Fortitude","Felwood","49","50","TRUE"],
+  ["Angerlaw Grizzly","Bear","2","None","Felwood","51","52","TRUE"],
+  ["Old Grizzlegut (R)","Bear","2","Claw 6","Feralas","43","43","TRUE"],
+  ["Ironfur Bear","Bear","2","Claw 6, Roar of Fortitude","Feralas","41","42","TRUE"],
+  ["Grizzled Ironfur Bear","Bear","2","None","Feralas","44","45","TRUE"],
+  ["Ironfur Patriarch","Bear","2","Claw 7","Feralas","48","49","TRUE"],
+  ["Big Samras (R)","Bear","2","None","Hillsbrad Foothills","27","27","FALSE"],
+  ["Gray Bear","Bear","2","Claw 3","Hillsbrad Foothills","21","22","FALSE"],
+  ["Vicious Gray Bear","Bear","2","None","Hillsbrad Foothills","22","23","FALSE"],
+  ["Elder Gray Bear","Bear","2","None","Hillsbrad Foothills","25","26","FALSE"],
+  ["Elder Black Bear","Bear","2","None","Loch Modan","11","12","TRUE"],
+  ["Grizzled Black Bear","Bear","2","None","Loch Modan","13","14","TRUE"],
+  ["Black Bear Patriarch","Bear","2","Claw 3","Loch Modan","16","17","TRUE"],
+  ["Ol' Sooty (E)","Bear","2","Claw 3","Loch Modan","20","20","TRUE"],
+  ["Ferocious Grizzled Bear","Bear","2","Claw 2","Silverpine Forest","11","12","FALSE"],
+  ["Old Vicejaw (R)","Bear","2","None","Silverpine Forest","14","14","FALSE"],
+  ["Giant Grizzled Bear","Bear","2","None","Silverpine Forest","12","13","FALSE"],
+  ["Diseased Black Bear","Bear","2","Roar of Fortitude","Western Plaguelands","51","52","TRUE"],
+  ["Diseased Grizzly","Bear","2","Claw 7, Roar of Fortitude","Western Plaguelands","55","56","TRUE"],
+  ["Rabid Shardtooth","Bear","2","None","Winterspring","59","60","FALSE"],
+  ["Shardtooth Bear","Bear","2","Claw 7","Winterspring","53","54","FALSE"],
+  ["Shardtooth Mauler","Bear","2","None","Winterspring","55","56","FALSE"],
+  ["Ursius (E)","Bear","2.4","None","Winterspring","56","56","FALSE"],
+  ["Elder Shardtooth","Bear","2","Claw 8, Roar of Fortitude","Winterspring","57","58","TRUE"],
+  // ── Boars (additional) ──
+  ["Grunter (R)","Boar","1.23","Charge 5, Dash 3","Blasted Lands","50","50","FALSE"],
+  ["Ashmane Boar","Boar","2","Charge 5","Blasted Lands","48","49","FALSE"],
+  ["Small Crag Boar","Boar","2","Charge 1","Dun Morogh","3","3","FALSE"],
+  ["Crag Boar","Boar","2","Charge 1","Dun Morogh","5","6","FALSE"],
+  ["Large Crag Boar","Boar","2","Charge 1","Dun Morogh","6","7","FALSE"],
+  ["Elder Crag Boar","Boar","2","Charge 1","Dun Morogh","7","8","FALSE"],
+  ["Scarred Crag Boar","Boar","2","Charge 1","Dun Morogh","9","10","FALSE"],
+  ["Dire Mottled Boar","Boar","2","Charge 1","Durotar","6","7","FALSE"],
+  ["Corrupted Mottled Boar","Boar","2","Charge 1","Durotar","10","11","FALSE"],
+  ["Mottled Boar","Boar","2","Charge 1","Durotar","1","2","FALSE"],
+  ["Elder Mottled Boar","Boar","2","Charge 1","Durotar","8","9","FALSE"],
+  ["Plagued Swine","Boar","2","Charge 6","Eastern Plaguelands","60","60","FALSE"],
+  ["Longsnout","Boar","2","None","Elwynn Forest","10","11","TRUE"],
+  ["Porcine Entourage","Boar","2","Charge 1","Elwynn Forest","7","7","FALSE"],
+  ["Rockhide Boar","Boar","2","Charge 1","Elwynn Forest","7","8","FALSE"],
+  ["Stonetusk Boar","Boar","2","Charge 1","Elwynn Forest","7","8","FALSE"],
+  ["Princess","Boar","2","Charge 1","Elwynn Forest","9","9","FALSE"],
+  ["Mountain Boar","Boar","2","Charge 1","Loch Modan","10","11","FALSE"],
+  ["Elder Mountain Boar","Boar","2","Charge 2","Loch Modan","16","17","FALSE"],
+  ["Mangy Mountain Boar","Boar","2","Charge 2","Loch Modan","14","15","FALSE"],
+  ["Bristleback Battleboar","Boar","2","Charge 1","Mulgore","4","5","FALSE"],
+  ["Battleboar","Boar","2","Charge 1","Mulgore","3","4","FALSE"],
+  ["Rotting Agam'ar (E)","Boar","2","Charge 3","Razorfen Kraul","28","28","FALSE"],
+  ["Agam'ar (E)","Boar","2","Charge 3","Razorfen Kraul","24","25","FALSE"],
+  ["Raging Agam'ar (E)","Boar","2","Charge 3","Razorfen Kraul","25","26","FALSE"],
+  ["Bellygrub","Boar","2","Charge 3","Redridge Mountains","24","24","TRUE"],
+  ["Great Goretusk","Boar","2","Charge 2","Redridge Mountains/Westfall","16","17","TRUE"],
+  ["Thistle Boar","Boar","2","Charge 1","Teldrassil","2","3","FALSE"],
+  ["Young Thistle Boar","Boar","2","Charge 1","Teldrassil","1","2","FALSE"],
+  ["Goretusk","Boar","2","Charge 2","Westfall","14","15","FALSE"],
+  ["Young Goretusk","Boar","2","Charge 2","Westfall","12","13","FALSE"],
+  // ── Carrion Birds ──
+  ["Young Mesa Buzzard","Carrion Bird","2","Dive 1","Arathi Highlands","31","32","FALSE"],
+  ["Mesa Buzzard","Carrion Bird","2","Dive 1","Arathi Highlands","34","35","FALSE"],
+  ["Elder Mesa Buzzard","Carrion Bird","2","None","Arathi Highlands","37","38","FALSE"],
+  ["Starving Buzzard","Carrion Bird","2","None","Badlands","35","37","FALSE"],
+  ["Wayward Buzzard","Carrion Bird","2","Dive 1","Badlands","35","37","FALSE"],
+  ["Buzzard","Carrion Bird","2","None","Badlands","37","39","FALSE"],
+  ["Giant Buzzard","Carrion Bird","2","None","Badlands","39","41","FALSE"],
+  ["Zaricotl (RE)","Carrion Bird","2","Dive 3","Badlands","55","55","FALSE"],
+  ["Black Slayer","Carrion Bird","2","None","Blasted Lands","46","48","FALSE"],
+  ["Spiteflayer (R)","Carrion Bird","1.2","Dive 3","Blasted Lands","52","52","FALSE"],
+  ["Dread Swoop","Carrion Bird","2","None","Desolace","32","33","FALSE"],
+  ["Dread Flayer","Carrion Bird","2","Dive 1","Desolace","36","37","FALSE"],
+  ["Dread Ripper","Carrion Bird","2","Screech 2","Desolace","39","40","TRUE"],
+  ["Carrion Horror","Carrion Bird","2","None","Desolace","35","37","FALSE"],
+  ["Mountain Buzzard","Carrion Bird","2","None","Loch Modan","15","16","FALSE"],
+  ["Lord Condar (R)","Carrion Bird","2","None","Loch Modan","15","16","FALSE"],
+  ["Wiry Swoop","Carrion Bird","2","None","Mulgore","5","7","FALSE"],
+  ["Swoop","Carrion Bird","2","None","Mulgore","7","9","FALSE"],
+  ["Taloned Swoop","Carrion Bird","2","None","Mulgore","8","10","FALSE"],
+  ["Dire Condor","Carrion Bird","2","None","Redridge Mountains","18","19","TRUE"],
+  ["Roc","Carrion Bird","2","Dive 2","Tanaris","42","43","FALSE"],
+  ["Fire Roc","Carrion Bird","2","Dive 2","Tanaris","43","45","FALSE"],
+  ["Greater Firebird (R)","Carrion Bird","1.27","Dive 2","Tanaris","46","46","TRUE"],
+  ["Searing Roc","Carrion Bird","2","Dive 2","Tanaris","47","49","FALSE"],
+  ["Salt Flats Scavenger","Carrion Bird","2","None","Thousand Needles","30","32","FALSE"],
+  ["Salt Flats Vulture","Carrion Bird","2","Screech 2","Thousand Needles","32","34","FALSE"],
+  ["Carrion Vulture","Carrion Bird","2","Dive 3, Screech 3","Western Plaguelands","50","52","FALSE"],
+  ["Greater Fleshripper","Carrion Bird","2","Screech 1","Westfall","16","17","FALSE"],
+  ["Vultros (R)","Carrion Bird","2","None","Westfall","26","26","FALSE"],
+  ["Young Fleshripper","Carrion Bird","2","None","Westfall","10","11","FALSE"],
+  ["Fleshripper","Carrion Bird","2","None","Westfall","13","14","FALSE"],
+  // ── Cats (additional) ──
+  ["Araga (R)","Cat","1.4","None","Alterac Mountains","35","35","FALSE"],
+  ["Mountain Lion","Cat","1.4","Prowl 1","Alterac Mountains","32","33","FALSE"],
+  ["Hulking Mountain Lion","Cat","1.4","None","Alterac Mountains","33","34","FALSE"],
+  ["Broken Tooth (R)","Cat","1","Dash 1","Badlands","37","37","FALSE"],
+  ["Ridge Stalker","Cat","1.3","Cower 4, Prowl 1","Badlands","36","37","FALSE"],
+  ["Ridge Huntress","Cat","2","Cower 4","Badlands","38","39","FALSE"],
+  ["Ridge Stalker Patriarch","Cat","1.3","Dash 2, Prowl 2","Badlands","40","41","FALSE"],
+  ["Shadowclaw (R)","Cat","1.5","None","Darkshore","13","13","FALSE"],
+  ["Moonstalker Matriarch","Cat","1.3","None","Darkshore","19","20","FALSE"],
+  ["Ghost Saber (U)","Cat","2","Claw 3","Darkshore","19","20","FALSE"],
+  ["Moonstalker Runt","Cat","1.3","Cower 1","Darkshore","10","11","FALSE"],
+  ["Moonstalker","Cat","1.3","None","Darkshore","14","15","FALSE"],
+  ["Moonstalker Sire","Cat","1.3","Cower 2","Darkshore","17","18","FALSE"],
+  ["Juvenille Snow Leopard","Cat","1.5","Cower 1","Dun Morogh","5","6","FALSE"],
+  ["Snow Leopard","Cat","2","None","Dun Morogh","7","8","FALSE"],
+  ["Durotar Tiger","Cat","1.3","Cower 1","Durotar","7","8","FALSE"],
+  ["Starving Mountain Lion","Cat","1.2","Cower 2","Hillsbrad Foothills","23","24","FALSE"],
+  ["Feral Mountain Lion","Cat","1.2","Cower 3","Hillsbrad Foothills","27","28","FALSE"],
+  ["Mountain Cougar","Cat","2","None","Mulgore","3","3","FALSE"],
+  ["Flatland Cougar","Cat","2","Cower 1","Mulgore","7","8","FALSE"],
+  ["Flatland Prowler","Cat","2","None","Mulgore","9","9","FALSE"],
+  ["The Rake (R)","Cat","1.2","None","Mulgore","10","10","FALSE"],
+  ["Twilight Runner","Cat","1.3","Cower 2","Stonetalon Mountains","23","24","FALSE"],
+  ["Young Panther","Cat","1.3","Cower 3","Stranglethorn Vale","30","31","FALSE"],
+  ["Kurzen War Panther","Cat","1.3","None","Stranglethorn Vale","32","33","FALSE"],
+  ["Panther","Cat","1.3","Cower 3","Stranglethorn Vale","32","33","FALSE"],
+  ["Shadowmaw Panther","Cat","1.5","Prowl 1","Stranglethorn Vale","37","38","FALSE"],
+  ["Bhag'thera (E)","Cat","1.5","Dash 2","Stranglethorn Vale","40","40","FALSE"],
+  ["Elder Shadowmaw Panther","Cat","1.5","Dash 2, Prowl 2","Stranglethorn Vale","42","43","FALSE"],
+  ["Jaguero Stalker","Cat","2","Cower 5, Prowl 3","Stranglethorn Vale","50","50","FALSE"],
+  ["Young Stranglethorn Tiger","Cat","1.3","Cower 3","Stranglethorn Vale","30","31","FALSE"],
+  ["Kurzen War Tiger","Cat","1.3","Dash 1","Stranglethorn Vale","32","33","FALSE"],
+  ["Stranglethorn Tiger","Cat","1.3","Dash 1","Stranglethorn Vale","32","33","FALSE"],
+  ["Ender Stranglethorn Tiger","Cat","1.3","None","Stranglethorn Vale","34","35","FALSE"],
+  ["Sin'Dall","Cat","1.3","Dash 1","Stranglethorn Vale","37","37","FALSE"],
+  ["Stranglethorn Tigress","Cat","1.3","None","Stranglethorn Vale","37","38","FALSE"],
+  ["King Bangalash (E)","Cat","1.4","Claw 6, Dash 2","Stranglethorn Vale","43","43","FALSE"],
+  ["Shadow Panther","Cat","1.6","Prowl 1","Swamp of Sorrows","39","40","TRUE"],
+  ["Swamp Jaguar","Cat","1.2","Dash 1","Swamp of Sorrows","36","37","TRUE"],
+  ["Young Nightsaber","Cat","2","None","Teldrassil","1","1","FALSE"],
+  ["Nightsaber","Cat","1.4","Cower 1","Teldrassil","5","6","FALSE"],
+  ["Elder Nightsaber","Cat","1.4","None","Teldrassil","8","9","FALSE"],
+  ["Feral Nightsaber","Cat","1.5","None","Teldrassil","10","11","FALSE"],
+  ["Mangy Nightsaber","Cat","2","None","Teldrassil","2","2","FALSE"],
+  ["Nightsaber Stalker","Cat","1.4","None","Teldrassil","7","8","FALSE"],
+  ["Duststalker (R)","Cat","1.4","None","Teldrassil","9","9","FALSE"],
+  ["Savannah Huntress","Cat","1.5","None","The Barrens","11","12","TRUE"],
+  ["Savannah Matriarch","Cat","1.7","None","The Barrens","17","18","TRUE"],
+  ["Dishu (R)","Cat","1.5","None","The Barrens","13","13","FALSE"],
+  ["Humar the Pridelord (R)","Cat","1.3","None","The Barrens","23","23","FALSE"],
+  ["Savannah Highmane","Cat","1.5","None","The Barrens","12","13","TRUE"],
+  ["Savannah Prowler","Cat","1.4","None","The Barrens","14","15","TRUE"],
+  ["Savannah Patriarch","Cat","1.3","Cower 2","The Barrens","15","16","TRUE"],
+  ["Echeyakee (U)","Cat","2","None","The Barrens","16","16","FALSE"],
+  ["Savannah Cub","Cat","1.2","Cower 1","The Barrens","4","5","TRUE"],
+  ["Needles Cougar","Cat","1.2","None","Thousand Needles","27","28","FALSE"],
+  ["Crag Stalker","Cat","1.6","Cower 3","Thousand Needles","25","26","FALSE"],
+  ["Frostsaber","Cat","1.5","None","Winterspring","56","57","FALSE"],
+  ["Frostsaber Cub","Cat","1.5","Cower 6","Winterspring","55","56","FALSE"],
+  ["Frostsaber Huntress","Cat","1.5","Dash 3","Winterspring","58","59","FALSE"],
+  ["Frostsaber Stalker","Cat","1.5","Dash 3, Prowl 3","Winterspring","59","60","FALSE"],
+  ["Rak'Shiri (R)","Cat","1.5","Dash 3","Winterspring","57","57","FALSE"],
+  ["Shy-Rotam (E)","Cat","1.5","None","Winterspring","60","60","FALSE"],
+  ["Frostsaber Pride Watcher","Cat","1.5","None","Winterspring","59","60","FALSE"],
+  ["Sian-Rotam (UE)","Cat","2","None","Winterspring","60","60","FALSE"],
+  ["Zulian Panther (E)","Cat","2","Dash 3","Zul'Gurub","60","60","FALSE"],
+  ["Zulian Prowler","Cat","1.6","None","Zul'Gurub","60","60","FALSE"],
+  ["Zulian Cub","Cat","2","None","Zul'Gurub","60","60","FALSE"],
+  ["Zulian Tiger (E)","Cat","2","None","Zul'Gurub","60","60","FALSE"],
+  // ── Crabs (additional) ──
+  ["Clattering Crawler","Crab","2","Claw 3","Ashenvale","19","20","TRUE"],
+  ["Spined Crawler","Crab","2","Bubble Barrier 1","Ashenvale","20","21","TRUE"],
+  ["Skittering Crustacean (E)","Crab","2","Claw 3","Blackfathom Deeps","22","23","TRUE"],
+  ["Snapping Crustacean (E)","Crab","2","Claw 3, Bubble Barrier 2","Blackfathom Deeps","23","24","TRUE"],
+  ["Barbed Crustacean (E)","Crab","2","Claw 4, Bubble Barrier 2","Blackfathom Deeps","25","26","TRUE"],
+  ["Pygmy Tide Crawler","Crab","2","None","Darkshore","9","10","TRUE"],
+  ["Tide Crawler","Crab","2","Claw 2","Darkshore","12","14","TRUE"],
+  ["Encrusted Tide Crawler","Crab","2","None","Darkshore","18","20","TRUE"],
+  ["Young Reef Crawler","Crab","2","Bubble Barrier 1","Darkshore","10","11","TRUE"],
+  ["Reef Crawler","Crab","2","Bubble Barrier 1","Darkshore","15","17","TRUE"],
+  ["Raging Reef Crawler","Crab","2","Bubble Barrier 1","Darkshore","20","21","TRUE"],
+  ["Enraged Reed Crawler","Crab","2","None","Desolace","30","32","FALSE"],
+  ["Corrupted Surf Crawler","Crab","2","Bubble Barrier 1","Durotar","10","11","TRUE"],
+  ["Pygmy Surf Crawler","Crab","2","Claw 1","Durotar","5","6","TRUE"],
+  ["Surf Crawler","Crab","2","None","Durotar","7","8","TRUE"],
+  ["Encrusted Surf Crawler","Crab","2","Claw 2","Durotar","9","10","TRUE"],
+  ["Southern Sand Crawler","Crab","2","Bubble Barrier 3","Stranglethorn Vale","40","41","TRUE"],
+  ["Silt Crawler","Crab","2","Claw 6, Bubble Barrier 3","Swamp of Sorrows","40","41","TRUE"],
+  ["Monstrous Crawler","Crab","2","Claw 6, Bubble Barrier 3","Swamp of Sorrows","43","44","TRUE"],
+  ["Silithid Protector (U)","Crab","2","None","The Barrens","18","19","TRUE"],
+  ["Sea Crawler","Crab","2","Bubble Barrier 1","Westfall","15","16","TRUE"],
+  ["Sand Crawler","Crab","2","None","Westfall","13","14","TRUE"],
+  ["Shore Crawler","Crab","2","Claw 3","Westfall","17","18","TRUE"],
+  // ── Crocolisks (additional) ──
+  ["Dreadmaw Crocolisk","Crocolisk","2","Bite 1","Durotar","9","11","TRUE"],
+  ["Corrupted Dreadmaw Crocolisk","Crocolisk","2","Death Roll 1","Durotar","11","12","TRUE"],
+  ["Drywallow Vicejaw","Crocolisk","2","None","Dustwallow Marsh","36","37","TRUE"],
+  ["Mottled Drywallow Crocolisk","Crocolisk","2","Bite 5","Dustwallow Marsh","38","39","TRUE"],
+  ["Ripscale (R)","Crocolisk","2","Bite 6","Dustwallow Marsh","39","39","TRUE"],
+  ["Deadmire","Crocolisk","2","Bite 6, Death Roll 4","Dustwallow Marsh","45","45","TRUE"],
+  ["Drywallow Crocolisk","Crocolisk","2","Bite 5, Death Roll 3","Dustwallow Marsh","35","36","TRUE"],
+  ["Drywallow Snapper","Crocolisk","2","Claw 5, Death Roll 3","Dustwallow Marsh","37","38","TRUE"],
+  ["Drywallow Daggermaw","Crocolisk","2","Bite 6, Death Roll 4","Dustwallow Marsh","40","41","TRUE"],
+  ["Loch Crocolisk","Crocolisk","2","Bite 2, Death Roll 1","Loch Modan","14","15","TRUE"],
+  ["Large Loch Crocolisk (R)","Crocolisk","1.48","Bite 3","Loch Modan","22","22","TRUE"],
+  ["Sewer Beast (R)","Crocolisk","2","Bite 7, Death Roll 5","Stormwind City","50","50","TRUE"],
+  ["Salwater Crocolisk","Crocolisk","2","None","Stranglethorn Vale","35","36","TRUE"],
+  ["Elder Saltwater Crocolisk (E)","Crocolisk","2","None","Stranglethorn Vale","38","38","TRUE"],
+  ["River Crocolisk","Crocolisk","2","Death Roll 3","Stranglethorn Vale","30","31","TRUE"],
+  ["Snapjaw Crocolisk","Crocolisk","2","None","Stranglethorn Vale","35","36","TRUE"],
+  ["Young Sawtooth Crocolisk","Crocolisk","2","Death Roll 3","Swamp of Sorrows","35","36","TRUE"],
+  ["Sawtooth Crocolisk","Crocolisk","2","Death Roll 3","Swamp of Sorrows","38","39","TRUE"],
+  ["Sawtooth Snapper","Crocolisk","2","Bite 6, Death Roll 4","Swamp of Sorrows","41","42","TRUE"],
+  ["Deviate Crocolisk","Crocolisk","2","Bite 3, Death Roll 1","Wailing Caverns","18","19","TRUE"],
+  ["Young Wetlands Crocolisk","Crocolisk","2","Death Roll 2","Wetlands","21","22","TRUE"],
+  ["Wetlands Crocolisk","Crocolisk","2","Death Roll 2","Wetlands","23","24","TRUE"],
+  ["Giant Wetlands Crocolisk","Crocolisk","2","Bite 4, Death Roll 2","Wetlands","25","26","TRUE"],
+  ["Zulian Crocolisk (E)","Crocolisk","2","Death Roll 6","Zul'Gurub","60","60","TRUE"],
+  // ── Gorillas (additional) ──
+  ["Groddoc Ape","Gorilla","2","None","Feralas","42","43","FALSE"],
+  ["Groddoc Thunderer","Gorilla","2","Thunderstomp 2","Feralas","49","50","TRUE"],
+  ["Jungle Thunderer","Gorilla","2","Thunderstomp 1","Stranglethorn Vale","37","38","FALSE"],
+  ["Konda (U)","Gorilla","2","None","Stranglethorn Vale","43","43","FALSE"],
+  ["Skymane Gorilla","Gorilla","2","None","Stranglethorn Vale","50","50","FALSE"],
+  ["Enraged Silverback Gorilla","Gorilla","2","None","Stranglethorn Vale","41","42","FALSE"],
+  ["Silverback Patriarch","Gorilla","2","None","Stranglethorn Vale","42","43","FALSE"],
+  ["Mistvale Gorilla","Gorilla","2","Thunderstomp 1","Stranglethorn Vale","32","33","FALSE"],
+  ["Elder Mistvale Gorilla","Gorilla","2","Thunderstomp 2","Stranglethorn Vale","40","41","FALSE"],
+  ["Kurmokk (R)","Gorilla","2","None","Stranglethorn Vale","42","42","FALSE"],
+  ["Un'Goro Gorilla","Gorilla","2","None","Un'Goro Crater","50","51","FALSE"],
+  ["Un'Goro Stomper","Gorilla","2","None","Un'Goro Crater","51","52","FALSE"],
+  ["Un'Goro Thunderer","Gorilla","2","Thunderstomp 3","Un'Goro Crater","52","53","FALSE"],
+  ["U'cha","Gorilla","2","Thunderstomp 3","Un'Goro Crater","55","55","FALSE"],
+  ["Uhk'loc (R)","Gorilla","2","Bite 7","Un'Goro Crater","52","52","FALSE"],
+  // ── Hyenas (additional) ──
+  ["Starving Snickerfang","Hyena","2","None","Blasted Lands","45","46","TRUE"],
+  ["Snickerfang Hyena","Hyena","2","None","Blasted Lands","49","50","TRUE"],
+  ["Ravage (R)","Hyena","1.3","Dash 3","Blasted Lands","51","51","TRUE"],
+  ["Starving Bonepaw","Hyena","2","None","Desolace","30","32","TRUE"],
+  ["Bonepaw Hyena","Hyena","2","Dash 1, Packleader","Desolace","33","35","TRUE"],
+  ["Rabid Bonepaw","Hyena","2","None","Desolace","36","38","TRUE"],
+  ["Giggler (R)","Hyena","2","None","Desolace","34","34","TRUE"],
+  ["Magram Bonepaw","Hyena","2","Dash 1","Desolace","37","38","TRUE"],
+  ["Maraudine Bonepaw (U)","Hyena","2","None","Desolace","37","38","TRUE"],
+  ["Scarlet Tracking Hound (E)","Hyena","1.5","Dash 1","Scarlet Monastery Library","33","34","FALSE"],
+  ["Starving Blisterpaw","Hyena","2","Dash 2","Tanaris","41","42","FALSE"],
+  ["Murderous Blisterpaw (R)","Hyena","2","Dash 2","Tanaris","43","43","FALSE"],
+  ["Rabid Blisterpaw","Hyena","2","Dash 2","Tanaris","47","48","FALSE"],
+  ["Blisterpaw Hyena","Hyena","2","Dash 2","Tanaris","44","45","FALSE"],
+  ["Kolkar Packhound","Hyena","2","None","The Barrens","13","13","TRUE"],
+  ["Snort the Heckler (R)","Hyena","2","None","The Barrens","17","17","FALSE"],
+  ["Hecklefang Hyena","Hyena","2","None","The Barrens","15","16","TRUE"],
+  ["Hecklefang Snarler","Hyena","2","None","The Barrens","18","19","TRUE"],
+  ["Hecklefang Stalker","Hyena","2","None","The Barrens","22","23","TRUE"],
+  ["Galak Packhound (tentative)","Hyena","1.5","None","Thousand Needles","24","24","FALSE"],
+  ["Steelsnap","Hyena","2","Packleader","Thousand Needles","30","30","TRUE"],
+  ["Pesterhide Hyena","Hyena","2","None","Thousand Needles","26","27","TRUE"],
+  ["Pesterhide Snarler","Hyena","2","None","Thousand Needles","28","29","TRUE"],
+  // ── Owls (additional) ──
+  ["Winterspring Owl","Owl","2","Claw 7, Dive 3","Winterspring","54","56","FALSE"],
+  ["Winterspring Screecher","Owl","2","Claw 8, Dive 3, Screech 4","Winterspring","57","59","FALSE"],
+  ["Strigid Owl","Owl","2","Claw 1","Teldrassil","5","6","FALSE"],
+  ["Strigid Screecher","Owl","2","None","Teldrassil","7","8","FALSE"],
+  ["Strigid Hunter","Owl","2","Claw 2","Teldrassil","8","9","FALSE"],
+  ["Azurebeak (R)","Owl","2","None","Hyjal","60","60","FALSE"],
+  ["Ironbeak Owl","Owl","2","Dive 2, Screech 3","Felwood","48","49","FALSE"],
+  ["Ironbeak Hunter","Owl","2","Claw 7, Dive 3","Felwood","50","51","FALSE"],
+  ["Ironbeak Screecher","Owl","2","Dive 3","Felwood","52","53","FALSE"],
+  ["Olm the Wise","Owl","2","Claw 7, Dive 3","Felwood","52","52","FALSE"],
+  ["Stormpike Owl","Owl","2","None","Alterac Valley","53","54","FALSE"],
+  // ── Raptors (additional) ──
+  ["Highland Thrasher","Raptor","2","Savage Rend 3","Arathi Highlands","33","34","TRUE"],
+  ["Highland Strider","Raptor","2","None","Arathi Highlands","30","31","TRUE"],
+  ["Highland Fleshstalker","Raptor","2","Savage Rend 4","Arathi Highlands","36","37","TRUE"],
+  ["Bloodtalon Taillasher","Raptor","2","Savage Rend 1","Durotar","6","8","TRUE"],
+  ["Bloodtalon Scythemaw","Raptor","2","Savage Rend 1","Durotar","8","10","TRUE"],
+  ["Corrupted Bloodtalon Scythemaw","Raptor","2","Savage Rend 1","Durotar","10","11","TRUE"],
+  ["Dart (R)","Raptor","2","None","Dustwallow Marsh","38","38","TRUE"],
+  ["Bloodfen Raptor","Raptor","2","None","Dustwallow Marsh","35","36","TRUE"],
+  ["Bloodfen Screecher","Raptor","2","Savage Rend 4","Dustwallow Marsh","36","37","TRUE"],
+  ["Bloodfen Scytheclaw","Raptor","2","None","Dustwallow Marsh","37","38","TRUE"],
+  ["Bloodfen Razormaw","Raptor","2","Savage Rend 4","Dustwallow Marsh","39","40","TRUE"],
+  ["Bloodfen Lashtail","Raptor","2","None","Dustwallow Marsh","40","41","TRUE"],
+  ["Razorscale (R)","Raptor","1.36","None","Grim Reaches","35","35","TRUE"],
+  ["Tethis (E)","Raptor","2","Savage Rend 4","Stranglethorn Vale","43","43","TRUE"],
+  ["Young Jungle Stalker","Raptor","2","Savage Rend 4","Stranglethorn Vale","36","37","TRUE"],
+  ["Young Stranglethorn Raptor","Raptor","2","Savage Rend 3","Stranglethorn Vale","30","31","TRUE"],
+  ["Stranglethorn Raptor","Raptor","2","None","Stranglethorn Vale","33","34","TRUE"],
+  ["Lashtail Raptor","Raptor","2","None","Stranglethorn Vale","35","36","TRUE"],
+  ["Jungle Stalker","Raptor","2","None","Stranglethorn Vale","40","41","TRUE"],
+  ["Young Lashtail Raptor","Raptor","2","None","Stranglethorn Vale","33","34","TRUE"],
+  ["Takk the Leaper (RE)","Raptor","2","Savage Rend 2","The Barrens","19","19","TRUE"],
+  ["Sunscale Lashtail","Raptor","2","Savage Rend 2","The Barrens","11","13","TRUE"],
+  ["Sunscale Screecher","Raptor","2","None","The Barrens","13","15","TRUE"],
+  ["Sunscale Scytheclaw","Raptor","2","Savage Rend 2","The Barrens","16","18","TRUE"],
+  ["Ishamuhale (U)","Raptor","2","Savage Rend 2","The Barrens","19","19","TRUE"],
+  ["Ravasaur Matriarch (R)","Raptor","1.23","Savage Rend 5","Un'goro Crater","50","50","TRUE"],
+  ["Deviate Slayer (E)","Raptor","2","None","Wailing Caverns","16","17","TRUE"],
+  ["Deviate Guardian (E)","Raptor","2","None","Wailing Caverns","18","19","TRUE"],
+  ["Deviate Stalker (E)","Raptor","2","None","Wailing Caverns","15","17","TRUE"],
+  ["Deviate Creeper (E)","Raptor","2","None","Wailing Caverns","15","16","TRUE"],
+  ["Deviate Ravager (E)","Raptor","2","None","Wailing Caverns","18","19","TRUE"],
+  ["Mottled Screecher","Raptor","2","None","Wetlands","24","25","TRUE"],
+  ["Mottled Razormaw","Raptor","2","None","Wetlands","26","27","TRUE"],
+  ["Snarltooth","Raptor","2","None","Wetlands","29","29","TRUE"],
+  ["Mottled Scytheclaw","Raptor","2","Savage Rend 3","Wetlands","25","26","TRUE"],
+  ["Highland Raptor","Raptor","2","None","Wetlands","23","24","TRUE"],
+  ["Highland Lashtail","Raptor","2","None","Wetlands","24","25","TRUE"],
+  ["Highland Scytheclaw","Raptor","2","Savage Rend 3","Wetlands","25","26","TRUE"],
+  ["Highland Razormaw","Raptor","2","None","Wetlands","27","28","TRUE"],
+  ["Elder Razormaw","Raptor","2","Savage Rend 3","Wetlands","29","29","TRUE"],
+  ["Mottled Raptor","Raptor","2","None","Wetlands","22","23","TRUE"],
+  ["Razormaw Matriarch (R)","Raptor","2","Savage Rend 3","Wetlands","31","31","TRUE"],
+  ["Razzashi Raptor (E)","Raptor","2","Savage Rend 6","Zul'Gurub","60","60","TRUE"],
+  // ── Scorpids (additional) ──
+  ["Deep Stinger","Scorpid","2","Scorpid Poison 3","Blackrock Depths","50","52","FALSE"],
+  ["Scorpok Stinger","Scorpid","2","Scorpid Poison 3","Blasted Lands","50","51","FALSE"],
+  ["Clack the Reaver (R)","Scorpid","2","Claw 7","Blasted Lands","53","53","FALSE"],
+  ["Venomtip Scorpid","Scorpid","2","Scorpid Poison 3","Burning Steppes","52","53","TRUE"],
+  ["Deathlash Scorpid","Scorpid","2","Claw 7, Scorpid Poison 3","Burning Steppes","54","55","TRUE"],
+  ["Firetail Scorpid","Scorpid","2","Scorpid Poison 4","Burning Steppes","56","57","TRUE"],
+  ["Scorpashi Snapper","Scorpid","2","Claw 4, Scorpid Poison 2","Desolace","30","31","FALSE"],
+  ["Scorpashi Lasher","Scorpid","2","Claw 5","Desolace","34","35","FALSE"],
+  ["Scorpashi Venomlash","Scorpid","2","Scorpid Poison 2","Desolace","38","39","TRUE"],
+  ["Sarkoth","Scorpid","2","Claw 1","Durotar","4","4","FALSE"],
+  ["Corrupted Scorpid","Scorpid","2","Scorpid Poison 1","Durotar","10","11","FALSE"],
+  ["Death Flayer (R)","Scorpid","1.6","Claw 2, Scorpid Poison 1","Durotar","11","11","FALSE"],
+  ["Armored Scorpid","Scorpid","2","None","Durotar","7","8","FALSE"],
+  ["Venomtail Scorpid","Scorpid","2","Claw 2, Scorpid Poison 1","Durotar","9","10","FALSE"],
+  ["Scorpid Worker","Scorpid","2","Claw 1","Durotar","3","3","FALSE"],
+  ["Clattering Scorpid","Scorpid","2","None","Durotar","5","6","FALSE"],
+  ["Krellack (R)","Scorpid","2","Scorpid Poison 4","Silithus","56","56","FALSE"],
+  ["Stonelash Scorpid","Scorpid","2","Scorpid Poison 3","Silithus","54","55","FALSE"],
+  ["Stonelash Flayer","Scorpid","2","Scorpid Poison 4","Silithus","58","59","FALSE"],
+  ["Stonelash Pincer","Scorpid","2","Scorpid Poison 4","Silithus","56","57","FALSE"],
+  ["Scorpid Hunter","Scorpid","2","Claw 6, Scorpid Poison 3","Tanaris","40","41","FALSE"],
+  ["Scorpid Tail Lasher","Scorpid","2","Scorpid Poison 3","Tanaris","43","44","FALSE"],
+  ["Scorpid Duneburrower (U)","Scorpid","2","Scorpid Poison 3","Tanaris","46","47","FALSE"],
+  ["Scorpid Dunestalker","Scorpid","2","Scorpid Poison 3","Tanaris","46","47","FALSE"],
+  ["Silithid Creeper","Scorpid","2","Scorpid Poison 1","The Barrens","20","21","TRUE"],
+  ["Silithid Swarmer","Scorpid","2","Scorpid Poison 1","The Barrens","21","22","TRUE"],
+  ["Scorpid Terror","Scorpid","2","Scorpid Poison 2","Thousand Needles","33","34","FALSE"],
+  ["Scorpid Reaver","Scorpid","2","Claw 4, Scorpid Poison 2","Thousand Needles","31","32","FALSE"],
+  ["Vile Sting (R)","Scorpid","2","Claw 5, Scorpid Poison 2","Thousand Needles","35","35","FALSE"],
+  ["Venomlash Scorpid (E)","Scorpid","2","Claw 5","Uldaman","39","40","FALSE"],
+  ["Cleft Scorpid","Scorpid","2","Scorpid Poison 2","Uldaman","35","36","FALSE"],
+  ["Deadly Cleft Scorpid","Scorpid","2","Scorpid Poison 3","Uldaman","42","43","FALSE"],
+  // ── Serpents (cobra) (additional) ──
+  ["Deviate Moccasin","Serpent (cobra)","2","Poison Spit 1","Wailing Caverns","20","21","TRUE"],
+  // ── Spiders (additional) ──
+  ["Plains Creeper","Spider","2","Bite 5, Web","Arathi Highlands","32","33","TRUE"],
+  ["Giant Plains Creeper","Spider","2","Bite 5, Web","Arathi Highlands","35","36","TRUE"],
+  ["Wildthorn Venomspitter","Spider","2","None","Ashenvale","24","25","TRUE"],
+  ["Wildthorn Stalker","Spider","2","None","Ashenvale","20","21","TRUE"],
+  ["Wildthorn Lurker","Spider","2","Bite 4, Web","Ashenvale","28","29","TRUE"],
+  ["Timberweb Recluse","Spider","2","Bite 6, Web","Azshara","47","48","TRUE"],
+  ["Cave Creeper","Spider","2","Bite 7","Blackrock Depths","50","52","FALSE"],
+  ["Spire Spiderling","Spider","1.5","None","Blackrock Spire (Lower)","55","56","FALSE"],
+  ["Black Widow Hatchling","Spider","2","None","Duskwood","24","25","TRUE"],
+  ["Green Recluse","Spider","2","Bite 3, Web","Duskwood","21","22","TRUE"],
+  ["Carrion Recluse","Spider","2","Web","Duskwood","25","26","TRUE"],
+  ["Pygmy Venom Web Spider","Spider","2","None","Duskwood","18","19","TRUE"],
+  ["Venom Web Spider","Spider","2","None","Duskwood","19","20","TRUE"],
+  ["Naraxis (R)","Spider","2","Bite 4, Web","Duskwood","27","27","TRUE"],
+  ["Darkfang Spider","Spider","2","Bite 5","Dustwallow Marsh","35","36","TRUE"],
+  ["Darkfang Lurker","Spider","2","Bite 5","Dustwallow Marsh","36","37","TRUE"],
+  ["Darkfang Venomspitter","Spider","2","None","Dustwallow Marsh","37","38","TRUE"],
+  ["Darkfang Creeper","Spider","2","Bite 5","Dustwallow Marsh","38","39","TRUE"],
+  ["Giant Darkfang Spider","Spider","2","None","Dustwallow Marsh","40","41","TRUE"],
+  ["Darkmist Spider","Spider","2","None","Dustwallow Marsh","35","36","TRUE"],
+  ["Darkmist Silkspinner","Spider","2","Web","Dustwallow Marsh","38","39","TRUE"],
+  ["Darkmist Recluse","Spider","2","None","Dustwallow Marsh","36","37","TRUE"],
+  ["Darkmist Lurker","Spider","2","None","Dustwallow Marsh","37","38","TRUE"],
+  ["Darkmist Widow (R)","Spider","2","None","Dustwallow Marsh","40","40","FALSE"],
+  ["Forest Spider","Spider","2","Bite 1","Elwynn Forest","5","6","TRUE"],
+  ["Mine Spider","Spider","2","None","Elwynn Forest","8","9","TRUE"],
+  ["Mother Fang (R)","Spider","2","None","Elwynn Forest","10","10","FALSE"],
+  ["Forest Moss Creeper","Spider","2","Bite 3, Web","Hillsbrad Foothills","20","21","TRUE"],
+  ["Giant Moss Creeper","Spider","2","Bite 4, Web","Hillsbrad Foothills","24","25","TRUE"],
+  ["Creepthess (R)","Spider","2","Bite 3","Hillsbrad Foothills","24","24","FALSE"],
+  ["Elder Moss Creeper","Spider","2","Bite 4","Hillsbrad Foothills","26","27","TRUE"],
+  ["Shanda the Spinner (R)","Spider","2","Bite 3","Loch Modan","19","19","FALSE"],
+  ["Forest Lurker","Spider","2","Bite 2","Loch Modan","10","11","TRUE"],
+  ["Cliff Lurker","Spider","2","None","Loch Modan","13","14","TRUE"],
+  ["Wood Lurker","Spider","2","Bite 3","Loch Modan","17","18","TRUE"],
+  ["Tarantula","Spider","2","Bite 2","Redridge Mountains","15","16","TRUE"],
+  ["Greater Tarantula","Spider","2","Bite 3","Redridge Mountains","19","20","TRUE"],
+  ["Chatter (R)","Spider","2","Bite 3","Redridge Mountains","23","23","FALSE"],
+  ["Searing Lava Spider","Spider","2","None","Searing Gorge","45","47","TRUE"],
+  ["Greater Lava Spider","Spider","2","None","Searing Gorge","47","49","TRUE"],
+  ["Rekk'tilac (R)","Spider","2","Bite 7","Searing Gorge","48","48","FALSE"],
+  ["Glassweb Spider","Spider","2","Web","Searing Gorge","43","45","TRUE"],
+  ["Gretheer (R)","Spider","1.18","None","Silithus","57","57","FALSE"],
+  ["Sand Skitterer","Spider","2","None","Silithus","55","56","TRUE"],
+  ["Rock Stalker","Spider","2","Web","Silithus","57","58","TRUE"],
+  ["Mist Creeper","Spider","2","None","Silverpine Forest","13","14","FALSE"],
+  ["Moss Stalker","Spider","2","None","Silverpine Forest","12","13","FALSE"],
+  ["Krethis Shadowspinner (R)","Spider","2","None","Silverpine Forest","15","15","FALSE"],
+  ["Deepmoss Creeper","Spider","2","Bite 3","Stonetalon Mountains","16","17","TRUE"],
+  ["Deepmoss Venomspitter","Spider","2","None","Stonetalon Mountains","17","18","TRUE"],
+  ["Deepmoss Webspinner","Spider","2","Bite 3, Web","Stonetalon Mountains","19","20","TRUE"],
+  ["Deepmoss Matriarch","Spider","2","Web","Stonetalon Mountains","22","22","TRUE"],
+  ["Besseleth (E)","Spider","2","Bite 3, Web","Stonetalon Mountains","21","21","TRUE"],
+  ["Deepmoss Hatchling","Spider","2","None","Stonetalon Mountains","14","14","TRUE"],
+  ["Deathstrike Tarantula","Spider","2","Bite 6","Swamp of Sorrows","40","41","TRUE"],
+  ["Sorrow Spinner","Spider","2","Web","Swamp of Sorrows","36","37","TRUE"],
+  ["Webwood Spider","Spider","2","None","Teldrassil","3","4","FALSE"],
+  ["Githyiss the Vile","Spider","2","Bite 1","Teldrassil","5","5","FALSE"],
+  ["Webwood Lurker","Spider","2","None","Teldrassil","5","6","FALSE"],
+  ["Webwood Venomfang","Spider","2","Bite 1","Teldrassil","7","8","FALSE"],
+  ["Webwood Silkspinner","Spider","2","Bite 2","Teldrassil","8","9","FALSE"],
+  ["Giant Webwood Spider","Spider","2","Bite 2","Teldrassil","10","11","FALSE"],
+  ["Lady Sathrah","Spider","2","Bite 2","Teldrassil","12","12","FALSE"],
+  ["Witherbark Broodguard","Spider","2","None","The Hinterlands","44","45","FALSE"],
+  ["Night Web Spider","Spider","2","Bite 1","Tirisfal Glades","3","4","FALSE"],
+  ["Night Web Matriarch","Spider","2","Bite 1","Tirisfal Glades","5","5","FALSE"],
+  ["Vicious Night Web Spider","Spider","2","Bite 2","Tirisfal Glades","9","10","FALSE"],
+  ["Sri'skulk (R)","Spider","2","None","Tirisfal Glades","13","13","FALSE"],
+  ["Young Night Web Spider","Spider","2","None","Tirisfal Glades","2","3","FALSE"],
+  ["Carion Lurker","Spider","2","None","Western Plaguelands","52","53","FALSE"],
+  ["Venom Mist Lurker","Spider","2","None","Western Plaguelands","50","51","FALSE"],
+  ["Plague Lurker","Spider","2","Bite 7","Western Plaguelands","54","55","FALSE"],
+  ["Cave Stalker","Spider","2","Web","Wetlands","21","22","TRUE"],
+  ["Leech Widow (R)","Spider","2","Bite 4","Wetlands","24","24","FALSE"],
+  ["Leech Stalker","Spider","2","None","Wetlands","21","22","TRUE"],
+  ["Razzashi Venombrood (E)","Spider","2","None","Zul'Gurub","60","60","FALSE"],
+  ["Spawn of Mar'li","Spider","1.4","None","Zul'Gurub","60","60","FALSE"],
+  ["Razzashi Broodwidow (E)","Spider","2.7","Web","Zul'Gurub","60","60","FALSE"],
+  // ── Tallstriders (additional) ──
+  ["Foreststrider Fledgling","Tallstrider","2","Cower 1, Strider Presence","Darkshore","11","13","TRUE"],
+  ["Foreststrider","Tallstrider","2","Strider Presence","Darkshore","14","16","TRUE"],
+  ["Giant Foreststrider","Tallstrider","2","Cower 2, Strider Presence","Darkshore","17","19","TRUE"],
+  ["Strider Clutchmother (R)","Tallstrider","2","None","Darkshore","20","20","TRUE"],
+  ["Plainstrider","Tallstrider","2","None","Mulgore","1","2","FALSE"],
+  ["Adult Plainstrider","Tallstrider","2","None","Mulgore","6","7","FALSE"],
+  ["Mazzranache (R)","Tallstrider","2","Cower 1","Mulgore","9","9","FALSE"],
+  ["Elder Plainstrider","Tallstrider","2","Cower 1","Mulgore","8","9","FALSE"],
+  ["Greater Plainstrider","Tallstrider","2","None","The Barrens","11","12","TRUE"],
+  ["Ornery Plainstrider","Tallstrider","1.3","Cower 2, Strider Presence","The Barrens","16","17","TRUE"],
+  ["Fleeting Plainstrider","Tallstrider","2","Cower 1, Strider Presence","The Barrens","12","13","TRUE"],
+  // ── Turtles (additional) ──
+  ["Cranky Benj (R)","Turtle","2","Bite 4, Shell Shield 1","Alterac Mountains","32","32","FALSE"],
+  ["Coralshell Tortoise","Turtle","2","None","Azshara","50","52","FALSE"],
+  ["Coralshell Lurker","Turtle","2","None","Azshara","53","54","FALSE"],
+  ["Aku'mai Fisher (E)","Turtle","2","Bite 3, Shell Shield 1","Blackfathom Deeps","23","24","FALSE"],
+  ["Ghamoo-ra (E)","Turtle","2","Bite 4, Shell Shield 1","Blackfathom Deeps","25","25","FALSE"],
+  ["Aku'mai Snapjaw (E)","Turtle","2","Bite 4, Shell Shield 1","Blackfathom Deeps","26","27","FALSE"],
+  ["Mudrock Tortoise","Turtle","2","None","Dustwallow Marsh","36","37","TRUE"],
+  ["Mudrock Spikeshell","Turtle","2","None","Dustwallow Marsh","37","38","TRUE"],
+  ["Mudrock Burrower","Turtle","2","None","Dustwallow Marsh","39","40","TRUE"],
+  ["Mudrock Snapjaw","Turtle","2","Bite 6","Dustwallow Marsh","41","42","TRUE"],
+  ["Mudrock Borer","Turtle","2","None","Dustwallow Marsh","42","43","TRUE"],
+  ["Snapjaw","Turtle","2","Bite 4, Shell Shield 1","Hillsbrad Foothills","30","31","FALSE"],
+  ["Stolid Snapjaw","Turtle","2","None","Maraudon","46","47","FALSE"],
+  ["Steeljaw Snapper","Turtle","2","None","Tanaris","42","43","FALSE"],
+  ["Surf Glider","Turtle","2","None","Tanaris","48","50","FALSE"],
+  ["Oasis Snapjaw","Turtle","2","Bite 2","The Barrens","15","16","TRUE"],
+  ["Ironback (R)","Turtle","2","Bite 7","The Hinterlands","51","51","FALSE"],
+  ["Saltwater Snapjaw","Turtle","2","Bite 7","The Hinterlands","49","50","FALSE"],
+  ["Sparkleshell Tortoise","Turtle","2","None","Thousand Needles","30","31","FALSE"],
+  ["Sparkleshell Borer","Turtle","2","None","Thousand Needles","32","33","FALSE"],
+  ["Sparkleshell Snapper","Turtle","2","Bite 5","Thousand Needles","34","35","FALSE"],
+  ["Kresh (E)","Turtle","2","Bite 3, Shell Shield 1","Wailing Caverns","20","20","TRUE"],
+  // ── Wind Serpents (additional) ──
+  ["Hayoc (R)","Wind Serpent","2","None","Dustwallow Marsh","41","41","FALSE"],
+  ["Vale Screecher","Wind Serpent","2","Dive 2, Lightning Breath 4","Feralas","41","43","FALSE"],
+  ["Rogue Vale Screecher","Wind Serpent","2","Dive 2, Lightning Breath 4","Feralas","44","46","FALSE"],
+  ["Arash-ethis (R)","Wind Serpent","2","Dive 2, Lightning Breath 5","Feralas","49","49","FALSE"],
+  ["Hakkari Sapper (E)","Wind Serpent","2","Lightning Breath 5","Sunken Temple","49","50","FALSE"],
+  ["Spawn of Hakkar (E)","Wind Serpent","2","Dive 3, Lightning Breath 5","Sunken Temple","51","51","FALSE"],
+  ["Hakkari Frostwing (E)","Wind Serpent","2","Lightning Breath 5","Sunken Temple","49","50","FALSE"],
+  ["Thunderhawk Hatchling","Wind Serpent","2","Lightning Breath 2","The Barrens","18","20","TRUE"],
+  ["Thunderhawk Cloudscraper","Wind Serpent","2","Lightning Breath 2","The Barrens","20","22","TRUE"],
+  ["Greater Thunderhawk","Wind Serpent","2","Lightning Breath 2","The Barrens","23","24","TRUE"],
+  ["Azzere the Skyblade (R)","Wind Serpent","2","None","The Barrens","25","25","FALSE"],
+  ["Washte Pawne","Wind Serpent","2","Lightning Breath 3","The Barrens","25","25","TRUE"],
+  ["Venonous Cloud Serpent","Wind Serpent","2","Lightning Breath 3","Thousand Needles","26","28","FALSE"],
+  ["Arikara (UE)","Wind Serpent","2","None","Thousand Needles","28","28","FALSE"],
+  ["Cloud Serpent","Wind Serpent","2","Lightning Breath 3","Thousand Needles","25","26","FALSE"],
+  ["Elder Cloud Serpent","Wind Serpent","2","Lightning Breath 3","Thousand Needles","27","29","FALSE"],
+  ["Deviate Dreadfang (E)","Wind Serpent","2","Lightning Breath 2","Wailing Caverns","20","21","TRUE"],
+  ["Deviate Stinglash (E)","Wind Serpent","2","Lightning Breath 2","Wailing Caverns","16","17","TRUE"],
+  ["Deviate Venomwing (E)","Wind Serpent","2","Lightning Breath 2","Wailing Caverns","20","21","TRUE"],
+  ["Deviate Coiler (E)","Wind Serpent","2","Lightning Breath 2","Wailing Caverns","15","16","TRUE"],
+  ["Deviate Coiler Hatchling (E)","Wind Serpent","2","Lightning Breath 1","Wailing Caverns","11","11","TRUE"],
+  ["Son of Hakkar (E)","Wind Serpent","2","Lightning Breath 6","Zul'Gurub","60","60","FALSE"],
+  // ── Wolves (additional) ──
+  ["Frostwolf","Wolf","2","None","Alterac Valley","50","51","FALSE"],
+  ["Mist Howler (R)","Wolf","1.3","Furious Howl 1","Ashenvale","22","22","FALSE"],
+  ["Ghostpaw Runner","Wolf","2","Bite 3","Ashenvale","19","20","FALSE"],
+  ["Ghostpaw Howler","Wolf","2","None","Ashenvale","23","24","FALSE"],
+  ["Ghostpaw Alpha","Wolf","1.3","Bite 4, Furious Howl 2","Ashenvale","27","28","FALSE"],
+  ["Crag Coyote","Wolf","2","Bite 5, Dash 1","Badlands","35","36","FALSE"],
+  ["Feral Crag Coyote","Wolf","2","Dash 1","Badlands","37","38","FALSE"],
+  ["Elder Crag Coyote","Wolf","2","Dash 1, Furious Howl 2","Badlands","39","40","FALSE"],
+  ["Rabid Crag Coyote","Wolf","2","Dash 2","Badlands","42","43","FALSE"],
+  ["Barnabus (R)","Wolf","2","Bite 6","Badlands","38","38","FALSE"],
+  ["Bloodaxe Worg Pup","Wolf","2","None","Blackrock Spire (Lower)","52","53","FALSE"],
+  ["Bloodaxe Worg","Wolf","1.5","Bite 8, Dash 3, Furious Howl 4","Blackrock Spire (Lower)","56","57","FALSE"],
+  ["Scarshield Worg","Wolf","1.5","Dash 3","Blackrock Spire (Lower)","53","54","FALSE"],
+  ["Deathmaw (R)","Wolf","1.2","None","Burning Steppes","53","53","FALSE"],
+  ["Blackrock Worg","Wolf","2","Dash 3","Burning Steppes","54","55","TRUE"],
+  ["Ember Worg","Wolf","2","None","Burning Steppes","51","52","TRUE"],
+  ["Slavering Ember Worg","Wolf","2","None","Burning Steppes","53","54","TRUE"],
+  ["Giant Ember Worg","Wolf","2","None","Burning Steppes","55","56","TRUE"],
+  ["Snow Tracker Wolf","Wolf","2","Bite 1","Dun Morogh","6","7","FALSE"],
+  ["Ragged Young Wolf","Wolf","2","None","Dun Morogh","1","1","FALSE"],
+  ["Ragged Timber Wolf","Wolf","2","None","Dun Morogh","2","2","FALSE"],
+  ["Winter Wolf","Wolf","2","Bite 1","Dun Morogh","7","8","FALSE"],
+  ["Starving Winter Wolf","Wolf","2","Bite 2","Dun Morogh","8","9","FALSE"],
+  ["Timber (R)","Wolf","2","Bite 2","Dun Morogh","10","10","FALSE"],
+  ["Starving Dire Wolf","Wolf","2","None","Duskwood","19","20","TRUE"],
+  ["Rabid Dire Wolf","Wolf","2","None","Duskwood","20","21","TRUE"],
+  ["Young Black Ravager","Wolf","2","None","Duskwood","23","24","TRUE"],
+  ["Black Ravager","Wolf","2","Bite 4","Duskwood","24","25","TRUE"],
+  ["Black Ravager Mastiff","Wolf","2","Bite 4, Furious Howl 2","Duskwood","25","26","TRUE"],
+  ["Lupos (R)","Wolf","2","Bite 3","Duskwood","23","23","FALSE"],
+  ["Spot","Wolf","2","Dash 1","Dustwallow Marsh","35","35","FALSE"],
+  ["Young Wolf","Wolf","2","None","Elwynn Forest","1","1","FALSE"],
+  ["Timber Wolf","Wolf","2","None","Elwynn Forest","2","2","FALSE"],
+  ["Mangy Wolf","Wolf","1.7","None","Elwynn Forest","5","6","FALSE"],
+  ["Gray Forest Wolf","Wolf","1.7","Bite 1","Elwynn Forest","7","8","FALSE"],
+  ["Prowler","Wolf","1.5","Bite 2","Elwynn Forest","9","10","FALSE"],
+  ["Felpaw Wolf","Wolf","2","Bite 6, Furious Howl 3","Felwood","47","48","FALSE"],
+  ["Felpaw Scavenger","Wolf","2","None","Felwood","49","50","FALSE"],
+  ["Felpaw Ravager","Wolf","2","Bite 7","Felwood","51","52","FALSE"],
+  ["Death Howl (R)","Wolf","2","Bite 6, Furious Howl 3","Felwood","49","49","FALSE"],
+  ["Snarler (R)","Wolf","2","Bite 6, Furious Howl 3","Feralas","42","42","FALSE"],
+  ["Longtooth Runner","Wolf","2","Bite 6, Dash 2, Furious Howl 3","Feralas","40","41","FALSE"],
+  ["Longtooth Howler","Wolf","2","Furious Howl 2","Feralas","43","44","FALSE"],
+  ["Rabid Longtooth","Wolf","2","None","Feralas","47","48","TRUE"],
+  ["Enraged Stanley (U)","Wolf","1.3","None","Hillsbrad Foothills","24","24","FALSE"],
+  ["Prairie Wolf","Wolf","1.5","Bite 1","Mulgore","5","6","FALSE"],
+  ["Prairie Stalker","Wolf","1.5","Bite 1","Mulgore","7","8","FALSE"],
+  ["Prairie Wolf Alpha","Wolf","1.4","Bite 2, Furious Howl 1","Mulgore","9","10","FALSE"],
+  ["Bleak Worg (E)","Wolf","2","None","Shadowfang Keep","18","19","FALSE"],
+  ["Slavering Worg (E)","Wolf","1.2","None","Shadowfang Keep","18","19","FALSE"],
+  ["Worg","Wolf","2","Bite 2, Furious Howl 1","Silverpine Forest","10","11","FALSE"],
+  ["Mottled Worg","Wolf","2","None","Silverpine Forest","11","12","FALSE"],
+  ["Bloodsnout Worg","Wolf","2","Bite 3","Silverpine Forest","16","17","FALSE"],
+  ["Gorefang (R)","Wolf","2","None","Silverpine Forest","13","13","FALSE"],
+  ["Vilebranch Wolf Pup","Wolf","2","None","The Hinterlands","46","47","FALSE"],
+  ["Vilebranch Raiding Wolf (E)","Wolf","1.7","Bite 7, Dash 3","The Hinterlands","50","51","FALSE"],
+  ["Old Cliff Jumper (R)","Wolf","2","Bite 6, Dash 2","The Hinterlands","42","42","FALSE"],
+  ["Mangy Silvermane","Wolf","2","None","The Hinterlands","41","42","FALSE"],
+  ["Silvermane Wolf","Wolf","2","Furious Howl 3","The Hinterlands","43","44","FALSE"],
+  ["Silvermane Howler","Wolf","2","Furious Howl 2","The Hinterlands","45","46","FALSE"],
+  ["Silvermane Stalker","Wolf","2","Dash 2","The Hinterlands","47","48","FALSE"],
+  ["Young Scavenger","Wolf","2","None","Tirisfal Glades","1","1","FALSE"],
+  ["Ragged Scavenger","Wolf","2","Bite 1","Tirisfal Glades","2","3","FALSE"],
+  ["Diseased Wolf","Wolf","2","Bite 7","Western Plaguelands","53","54","FALSE"],
+  ["Coyote","Wolf","2","Bite 2","Westfall","10","11","FALSE"],
+  ["Coyote Packleader","Wolf","2","Bite 2, Furious Howl 1","Westfall","11","12","FALSE"],
+];
+
+// Beast appearance images (name → imgur URL)
+const BEAST_IMG = {
+  "Greater Vilewing Bat":"https://i.imgur.com/Wnvqv38.png","Vilewing Bat":"https://i.imgur.com/R2JkhPg.jpeg","Vilewing Batling":"https://i.imgur.com/ziIBszE.jpeg",
+  "Enraged Sharpclaw":"https://i.imgur.com/OCsLKjh.jpeg","Tirisfal Plagued Bear":"https://i.imgur.com/lzj2qmH.jpeg","Tirisclaw Bear":"https://i.imgur.com/9F5qq6A.jpeg","Tirisclaw Cub":"https://i.imgur.com/9F5qq6A.jpeg","Goldpelt Grizzly":"https://i.imgur.com/83NkYLz.png","Goldpelt Bear":"https://i.imgur.com/lr6eBYM.png",
+  "Hightusk Boar":"https://i.imgur.com/0GdOaBn.png","Bristleback Boar":"https://i.imgur.com/rtOyIrF.jpeg","Elder Thalassian Boar":"https://i.imgur.com/Jw1JDVJ.jpeg","Thalassian Boar":"https://i.imgur.com/lh0CKzW.jpeg","Young Thalassian Boar":"https://i.imgur.com/9WVfx8g.jpeg","Cragtusk Boar":"https://i.imgur.com/wOUpki3.jpeg","Burly Goldbristle Boar":"https://i.imgur.com/pTU6TaM.png","Goldbristle Boar":"https://i.imgur.com/kdMTPRj.png","Young Goldbristle Boar":"https://i.imgur.com/0WOaePW.png","Stonehide Boar":"https://i.imgur.com/JlWiyAv.png","Elder Stonehide Boar":"https://i.imgur.com/zJqnQgY.png",
+  "Stormwing Buzzard":"https://i.imgur.com/xJY5Hvf.png","Stormwing Vulture":"https://i.imgur.com/TSu7w3G.png","Ashfeather Scavenger":"https://i.imgur.com/pfj8lKB.png","Ashfeather Buzzard":"https://i.imgur.com/Hazu5G6.png","Ashfeather Swooper":"https://i.imgur.com/2TddzPq.png",
+  "Darksaber":"https://i.imgur.com/TYWXQpo.jpeg","Junglepaw Panther":"https://i.imgur.com/cGXRPmA.jpeg","Junglepaw Shadow Panther":"https://i.imgur.com/aFkADwo.png","Bengal Alpha":"https://i.imgur.com/8GMB4Ed.jpeg","Bengal Matriarch":"https://i.imgur.com/p7zRCVu.png","Bengal Tiger":"https://i.imgur.com/sZgy99w.jpeg","Hazzuri Tiger":"https://i.imgur.com/W0DNo8p.jpeg","Young Bengal Tiger":"https://i.imgur.com/CaP0UTb.png","Bright Lynx":"https://i.imgur.com/9TYNIsv.jpeg","Bright Lynx Matriarch":"https://i.imgur.com/eLtW1t7.jpeg","Crimson Lynx":"https://i.imgur.com/7i8ZIqy.jpeg","Elder Crimson Lynx":"https://i.imgur.com/nmf4ojA.jpeg","Shar'lan":"https://i.imgur.com/45Qem0f.jpeg","Young Crimson Lynx":"https://i.imgur.com/N4AILQn.jpeg","Sorrowclaw":"https://i.imgur.com/Puhm5ec.jpeg",
+  "Silver Coast Crawler":"https://i.imgur.com/i1Qxqki.jpeg","Strand Crawler":"https://i.imgur.com/CIFs1e0.jpeg","Bright Crawler":"https://i.imgur.com/p6dWq66.jpeg","Island Pincer":"https://i.imgur.com/76Rhddd.jpeg","Rock Crawler":"https://i.imgur.com/582dbWJ.jpeg","Rockshell Crawler":"https://i.imgur.com/V9afbhW.jpeg","Sandshell Crawler":"https://i.imgur.com/IdPqTSq.jpeg","Farstride Crawler":"https://i.imgur.com/kCUCZRe.png","Muckreef Crawler":"https://i.imgur.com/C8IM6v2.png","Young Muckreef Crawler":"https://i.imgur.com/z6RCzwl.png",
+  "Saltsnap Crocolisk":"https://i.imgur.com/kgk4nIG.jpeg","Sorrowmore Crocolisk":"https://i.imgur.com/K0eAF6k.png","Giant Razortooth Crocolisk":"https://i.imgur.com/WT8iCRc.png","Razortooth Crocolisk":"https://i.imgur.com/bi0zkXl.png",
+  "Mist Fox":"https://i.imgur.com/II9O84j.png","Young Arctic Fox":"https://i.imgur.com/uGrtjuG.png","Silver Fox":"https://i.imgur.com/TRkLiGY.png","Red Fox":"https://i.imgur.com/zB8PUXO.jpeg","Young Mist Fox":"https://i.imgur.com/zoWyv0G.jpeg","Thalassian Fox":"https://i.imgur.com/mYPgBiM.jpeg","Young Brown Fox":"https://i.imgur.com/K7sYyMX.jpeg","Spirit Fox (rare)":"https://i.imgur.com/ZafZKVY.png",
+  "Jungleback Stomper":"https://i.imgur.com/NjDc5hD.jpeg","Jungleback Thrasher":"https://i.imgur.com/ffdN8kx.jpeg","Elder Highvale Gorilla":"https://i.imgur.com/DU0IiRA.jpeg","Highvale Chimpanzee":"https://i.imgur.com/2JzmJXT.png","Highvale Gorilla":"https://i.imgur.com/n4EeQdp.png","Highvale Monkey":"https://i.imgur.com/buazRui.png","King Morogo Thunderfoot":"https://i.imgur.com/VyaZk39.png","Highvale Thunderer":"https://i.imgur.com/xoa7Rcl.png",
+  "Ashpaw Hyena":"https://i.imgur.com/zgRjAZQ.png","Ashpaw Hunter":"https://i.imgur.com/64S5wOZ.png",
+  "Amani Eagle":"https://i.imgur.com/EpHeY29.jpeg","Greathorn Hunter":"https://i.imgur.com/V0r37pS.jpeg","Greathorn Owl":"https://i.imgur.com/Uo4J0al.jpeg","Hinterlands Eagle":"https://i.imgur.com/UxLbN42.jpeg",
+  "Venomhide Ravasaur":"https://i.imgur.com/0HIV6TM.png","Grimscale Raptor":"https://i.imgur.com/dLhR7rV.png","Grimscale Screecher":"https://i.imgur.com/hQ2uLG4.png","Grimscale Thrasher":"https://i.imgur.com/USlCQgw.png",
+  "Murk Slitherer":"https://i.imgur.com/FvjN1HP.png","Murk Spitter":"https://i.imgur.com/Ywgnki6.png","Brushtail Adder":"https://i.imgur.com/7Jp10dd.jpeg","Brushtail Cobra":"https://i.imgur.com/kPfpJax.jpeg","Deviate Viper":"https://i.imgur.com/yruafju.png","Deviate Adder":"https://i.imgur.com/6AqUUzT.jpeg","Sandfury Guardian":"https://i.imgur.com/39s6AF3.png","Razzashi Serpent":"https://i.imgur.com/MMpaX3o.png","Razzashi Adder":"https://i.imgur.com/9vfaysz.png",
+  "Hollow Web Spider":"https://i.imgur.com/QlYPT2x.jpeg","Hollow Web Venomspitter":"https://i.imgur.com/8x6SAZg.jpeg","Duskskitterer (rare)":"https://i.imgur.com/YvIrquw.png","Mistbark Spider":"https://i.imgur.com/iLJ1A7z.png","Mistbark Webweaver":"https://i.imgur.com/1R8sbe9.png","Mother Mistbark":"https://i.imgur.com/m2B3Ud2.png","Brown Recluse":"https://i.imgur.com/ZXGWKos.png","Greater Brown Recluse":"https://i.imgur.com/23SDAp7.png","Cavernweb Spider (E)":"https://i.imgur.com/GHz2naK.png","Cavernweb Venomspitter (E)":"https://i.imgur.com/zGXcWZG.png","Cavernweb Creeper (E)":"https://i.imgur.com/vixNLFe.png",
+  "Crimson Hawkstrider":"https://i.imgur.com/uLpYpRW.jpeg","Forest Hawkstrider":"https://i.imgur.com/ljkBuuh.jpeg","Ivory Hawkstrider":"https://i.imgur.com/V37eq9N.jpeg",
+  "Deepshell Snapper":"https://i.imgur.com/Mn7Twe6.jpeg","Sickly Clearwater Snapjaw":"https://i.imgur.com/eKZIMht.png","Clearwater Snapjaw":"https://i.imgur.com/Hel09mR.png",
+  "Venomous Jungle Serpent":"https://i.imgur.com/3OBkVXc.jpeg","Venomflayer Screecher":"https://i.imgur.com/jpaI6NX.png","Venomflayer Serpent (untameable)":"https://i.imgur.com/ytvr56H.png","Brilliant Mana Wyrm":"https://i.imgur.com/7ddjB5I.png","Emerald Mana Wyrm":"https://i.imgur.com/y0yo9AF.png","Lavender Mana Wyrm":"https://i.imgur.com/Sir6AMu.jpeg",
+  "Duskpelt Prowler":"https://i.imgur.com/ubpdpzV.jpeg","Duskpelt Stalker":"https://i.imgur.com/qVDPIi2.jpeg","Starving Duskpelt":"https://i.imgur.com/5v3unD8.jpeg","Bayne (rare)":"https://i.imgur.com/563MY77.jpeg","Cursed Darkhound":"https://i.imgur.com/SdvParS.jpeg","Decrepit Darkhound":"https://i.imgur.com/0EgPVMG.jpeg","Ravenous Darkhound":"https://i.imgur.com/LOzWX0J.jpeg","Graypaw Wolf":"https://i.imgur.com/uyvjgHF.png","Graypaw Alpha (rare)":"https://i.imgur.com/Hz2xV3E.jpeg","Slavering Crag Coyote":"https://i.imgur.com/oq3mMbi.png","Ragged Crag Coyote":"https://i.imgur.com/6VMKImt.png","Timber Wolf Alpha":"https://i.imgur.com/U1xKqiQ.png","Elder Timber Wolf":"https://i.imgur.com/pdy92Dg.png","Young Timber Wolf":"https://i.imgur.com/bnYBrOP.png",
+};
+
+// Location map images (name → imgur URL)
+const LOC_IMG = {
+  "Greater Vilewing Bat":"https://i.imgur.com/r47KbvM.jpeg","Vilewing Bat":"https://i.imgur.com/dEIzJwW.jpeg","Vilewing Batling":"https://i.imgur.com/gDKC2Bz.jpeg",
+  "Enraged Sharpclaw":"https://i.imgur.com/snlzIY1.jpeg","Tirisfal Plagued Bear":"https://i.imgur.com/bPPUauf.jpeg","Tirisclaw Bear":"https://i.imgur.com/QTr4a90.jpeg","Tirisclaw Cub":"https://i.imgur.com/gTmF27s.jpeg","Goldpelt Grizzly":"https://i.imgur.com/ujR6iiK.jpeg","Goldpelt Bear":"https://i.imgur.com/C6MN8z7.jpeg",
+  "Hightusk Boar":"https://i.imgur.com/oKZXxEC.png","Forest Boar":"https://i.imgur.com/6C3C4tp.jpeg","Elder Forest Boar":"https://i.imgur.com/0dKq949.jpeg","Bristleback Boar":"https://i.imgur.com/cAotaUG.jpeg","Elder Thalassian Boar":"https://i.imgur.com/lMPErJ1.jpeg","Thalassian Boar":"https://i.imgur.com/5WhDg8d.jpeg","Young Thalassian Boar":"https://i.imgur.com/InsqrEH.jpeg","Cragtusk Boar":"https://i.imgur.com/ZrmulIN.jpeg","Burly Goldbristle Boar":"https://i.imgur.com/xgLqPHT.jpeg","Goldbristle Boar":"https://i.imgur.com/ciVyYKJ.jpeg","Young Goldbristle Boar":"https://i.imgur.com/r9kTxUW.jpeg","Stonehide Boar":"https://i.imgur.com/FkvMXoR.jpeg","Elder Stonehide Boar":"https://i.imgur.com/Kdkzf9p.jpeg",
+  "Stormwing Buzzard":"https://i.imgur.com/dBk1vOk.jpeg","Stormwing Vulture":"https://i.imgur.com/Sj2IcAs.jpeg",
+  "Darksaber":"https://i.imgur.com/64JB5eq.jpeg","Junglepaw Panther":"https://i.imgur.com/aQcVWeg.jpeg","Junglepaw Shadow Panther":"https://i.imgur.com/bjoekvS.jpeg","Bengal Alpha":"https://i.imgur.com/p6H7uNn.jpeg","Bengal Matriarch":"https://i.imgur.com/zgMbo9N.jpeg","Bengal Tiger":"https://i.imgur.com/zARdAwS.jpeg","Hazzuri Tiger":"https://i.imgur.com/haCIyI8.jpeg","Young Bengal Tiger":"https://i.imgur.com/DwIQbDU.jpeg","Bright Lynx":"https://i.imgur.com/W94Lpt7.jpeg","Bright Lynx Matriarch":"https://i.imgur.com/j7ExsAu.jpeg","Crimson Lynx":"https://i.imgur.com/EEpp78J.jpeg","Elder Crimson Lynx":"https://i.imgur.com/BlvChda.jpeg","Shar'lan":"https://i.imgur.com/P4Wh04R.jpeg","Young Crimson Lynx":"https://i.imgur.com/1yAVaKG.jpeg","Sorrowclaw":"https://i.imgur.com/vBkKM1A.jpeg",
+  "Silver Coast Crawler":"https://i.imgur.com/v5C3bG6.jpeg","Strand Crawler":"https://i.imgur.com/zgTttsG.jpeg","Bright Crawler":"https://i.imgur.com/7DXFdAe.jpeg","Island Pincer":"https://i.imgur.com/tQHYt5I.jpeg","Rock Crawler":"https://i.imgur.com/8oiIEeK.jpeg","Rockshell Crawler":"https://i.imgur.com/PPkeKP4.jpeg","Sandshell Crawler":"https://i.imgur.com/cNb8qyO.jpeg","Farstride Crawler":"https://i.imgur.com/IHc1xIv.jpeg",
+  "Saltsnap Crocolisk":"https://i.imgur.com/yh6fGOt.jpeg","Sorrowmore Crocolisk":"https://i.imgur.com/JU3jwC5.jpeg","Giant Razortooth Crocolisk":"https://i.imgur.com/voERQTu.png","Razortooth Crocolisk":"https://i.imgur.com/qLJA6o7.jpeg",
+  "Mist Fox":"https://i.imgur.com/ubq2Dtc.jpeg","Young Arctic Fox":"https://i.imgur.com/qSG4rD5.jpeg","Silver Fox":"https://i.imgur.com/oQ6eTix.jpeg","Red Fox":"https://i.imgur.com/1Y2ElR1.jpeg","Young Mist Fox":"https://i.imgur.com/B4RzJT2.jpeg","Thalassian Fox":"https://i.imgur.com/L83rNdI.jpeg","Young Brown Fox":"https://i.imgur.com/20YOgjl.jpeg","Spirit Fox (rare)":"https://i.imgur.com/sXNSIem.jpeg",
+  "Jungleback Stomper":"https://i.imgur.com/1I7EaDv.jpeg","Jungleback Thrasher":"https://i.imgur.com/RwDb66q.jpeg","Elder Highvale Gorilla":"https://i.imgur.com/O8O4EDE.jpeg","Highvale Chimpanzee":"https://i.imgur.com/zDZfqe3.jpeg","Highvale Gorilla":"https://i.imgur.com/xLCTjvw.jpeg","Highvale Monkey":"https://i.imgur.com/hrsTss2.jpeg","King Morogo Thunderfoot":"https://i.imgur.com/a3CeLmu.jpeg","Highvale Thunderer":"https://i.imgur.com/egNddHT.jpeg",
+  "Soothound (Untameable)":"https://i.imgur.com/zw35qbZ.jpeg",
+  "Amani Eagle":"https://i.imgur.com/XgVHZoK.jpeg","Greathorn Hunter":"https://i.imgur.com/BmgNmJk.jpeg","Greathorn Owl":"https://i.imgur.com/FFR6Om7.jpeg","Hinterlands Eagle":"https://i.imgur.com/EweSvpV.jpeg",
+  "Venomhide Ravasaur":"https://i.imgur.com/ukCeTRd.jpeg","Grimscale Raptor":"https://i.imgur.com/udTrOKl.jpeg","Grimscale Screecher":"https://i.imgur.com/vou1BSb.jpeg","Grimscale Thrasher":"https://i.imgur.com/jCnzbRJ.jpeg",
+  "Murk Slitherer":"https://i.imgur.com/NkTYvqG.jpeg","Murk Spitter":"https://i.imgur.com/AQObDuV.jpeg","Brushtail Adder":"https://i.imgur.com/3djOTsf.jpeg","Brushtail Cobra":"https://i.imgur.com/bEKA9dE.jpeg","Deviate Viper":"https://i.imgur.com/2D5sXva.jpeg","Deviate Adder":"https://i.imgur.com/naAos1l.jpeg","Sandfury Guardian":"https://i.imgur.com/fVCMtmf.jpeg",
+  "Hollow Web Spider":"https://i.imgur.com/HhtgQuu.jpeg","Hollow Web Venomspitter":"https://i.imgur.com/GPmX0ZQ.jpeg","Duskskitterer (rare)":"https://i.imgur.com/KZcWsak.jpeg","Mistbark Spider":"https://i.imgur.com/bzY9ftz.jpeg","Mistbark Webweaver":"https://i.imgur.com/IQV44Pi.jpeg","Mother Mistbark":"https://i.imgur.com/A6rlpRb.jpeg","Brown Recluse":"https://i.imgur.com/o9G8Z0O.jpeg","Greater Brown Recluse":"https://i.imgur.com/mfcB4ez.jpeg",
+  "Crimson Hawkstrider":"https://i.imgur.com/uhmX6VV.jpeg","Forest Hawkstrider":"https://i.imgur.com/tAooz7d.jpeg","Ivory Hawkstrider":"https://i.imgur.com/owRW6Vz.jpeg",
+  "Deepshell Snapper":"https://i.imgur.com/m4OZJkq.jpeg","Sickly Clearwater Snapjaw":"https://i.imgur.com/so5xSRM.png","Clearwater Snapjaw":"https://i.imgur.com/Dc7ubjo.jpeg",
+  "Venomous Jungle Serpent":"https://i.imgur.com/7VuTPYI.jpeg","Venomflayer Screecher":"https://i.imgur.com/uOMo97f.jpeg","Venomflayer Serpent (untameable)":"https://i.imgur.com/CY8IEQh.jpeg","Brilliant Mana Wyrm":"https://i.imgur.com/WqD4zIt.jpeg","Emerald Mana Wyrm":"https://i.imgur.com/716qyx9.jpeg","Lavender Mana Wyrm":"https://i.imgur.com/yGs3Gog.jpeg",
+  "Dawnhowl (rare)":"https://i.imgur.com/Y6ADZFT.jpeg","Duskpelt Prowler":"https://i.imgur.com/4ZVe5ZW.jpeg","Duskpelt Stalker":"https://i.imgur.com/gOiJ6EO.jpeg","Starving Duskpelt":"https://i.imgur.com/w9nOeh4.jpeg","Bayne (rare)":"https://i.imgur.com/zGGYLuR.jpeg","Cursed Darkhound":"https://i.imgur.com/INt8E0J.jpeg","Decrepit Darkhound":"https://i.imgur.com/xrYKWMW.jpeg","Ravenous Darkhound":"https://i.imgur.com/w78227K.jpeg","Graypaw Wolf":"https://i.imgur.com/YhGi32T.jpeg","Graypaw Alpha (rare)":"https://i.imgur.com/eW8LkqO.jpeg","Slavering Crag Coyote":"https://i.imgur.com/ahdYFKP.jpeg","Ragged Crag Coyote":"https://i.imgur.com/ZuxBQNH.jpeg","Timber Wolf Alpha":"https://i.imgur.com/xDYGaGD.jpeg","Elder Timber Wolf":"https://i.imgur.com/kKaCGCe.jpeg","Young Timber Wolf":"https://i.imgur.com/9KaSUK3.jpeg",
+};
+
+// Names exactly as they appear on the "Custom Beasts" tab (gid=0)
+const CUSTOM_BEASTS = new Set([
+  "Greater Vilewing Bat","Vilewing Bat","Vilewing Batling",
+  "Enraged Sharpclaw","Tirisfal Plagued Bear","Tirisclaw Bear","Tirisclaw Cub",
+  "Goldpelt Grizzly","Goldpelt Bear","Bruno (R)",
+  "Hightusk Boar","Forest Boar","Elder Forest Boar","Bristleback Boar",
+  "Elder Thalassian Boar","Thalassian Boar","Young Thalassian Boar","Cragtusk Boar","Mesa Boar",
+  "Burly Goldbristle Boar","Goldbristle Boar","Young Goldbristle Boar",
+  "Stonehide Boar","Elder Stonehide Boar","Goldtusk (R)",
+  "Stormwing Buzzard","Stormwing Vulture",
+  "Ashfeather Scavenger","Ashfeather Buzzard","Ashfeather Swooper",
+  "Darksaber","Junglepaw Panther","Junglepaw Shadow Panther",
+  "Bengal Alpha","Bengal Matriarch","Bengal Tiger","Hazzuri Tiger","Young Bengal Tiger",
+  "Bright Lynx","Bright Lynx Matriarch","Crimson Lynx","Elder Crimson Lynx","Shar'lan","Young Crimson Lynx",
+  "Sorrowclaw",
+  "Silver Coast Crawler","Strand Crawler","Bright Crawler","Island Pincer","Rock Crawler",
+  "Rockshell Crawler","Sandshell Crawler","Farstride Crawler","Muckreef Crawler","Young Muckreef Crawler",
+  "Saltsnap Crocolisk","Sorrowmore Crocolisk","Giant Razortooth Crocolisk","Razortooth Crocolisk",
+  "Mist Fox","Young Arctic Fox","Silver Fox","Red Fox","Young Mist Fox","Thalassian Fox","Young Brown Fox","Spirit Fox (rare)",
+  "Jungleback Stomper","Jungleback Thrasher",
+  "Elder Highvale Gorilla","Highvale Chimpanzee","Highvale Gorilla","Highvale Monkey",
+  "King Morogo Thunderfoot","Highvale Thunderer","Highvale Silverback (rare)",
+  "Soothound (Untameable)","Ashpaw Hyena","Ashpaw Hunter",
+  "Amani Eagle","Greathorn Hunter","Greathorn Owl","Hinterlands Eagle",
+  "Venomhide Ravasaur","Grimscale Raptor","Grimscale Screecher","Grimscale Thrasher",
+  "Ravasaur","Ravasaur Hunter","Lar'Korwi","Ravasaur Runner","Lar'Korwi Mate",
+  "Stonetail Scorpid","Stonetail Lasher","Blackvenom Scorpid",
+  "Murk Slitherer","Murk Spitter","Brushtail Adder","Brushtail Cobra",
+  "Deviate Viper","Deviate Adder","Sandfury Guardian","Razzashi Serpent","Razzashi Adder",
+  "Hollow Web Spider","Hollow Web Venomspitter","Duskskitterer (rare)",
+  "Mistbark Spider","Mistbark Webweaver","Mother Mistbark",
+  "Brown Recluse","Greater Brown Recluse","Skitterweb Crawler (E)",
+  "Cavernweb Spider (E)","Cavernweb Venomspitter (E)","Cavernweb Creeper (E)","Cavernweb Broodmother (E)",
+  "Moonfeather (untameable)","Crimson Hawkstrider","Forest Hawkstrider","Ivory Hawkstrider",
+  "Deepshell Snapper","Sickly Clearwater Snapjaw","Clearwater Snapjaw",
+  "Venomous Jungle Serpent","Venomflayer Screecher","Venomflayer Serpent (untameable)",
+  "Brilliant Mana Wyrm","Emerald Mana Wyrm","Lavender Mana Wyrm",
+  "Dawnhowl (rare)","Duskpelt Prowler","Duskpelt Stalker","Starving Duskpelt",
+  "Bayne (rare)","Cursed Darkhound","Decrepit Darkhound","Ravenous Darkhound",
+  "Graypaw Wolf","Graypaw Alpha (rare)","Slavering Crag Coyote","Ragged Crag Coyote",
+  "Timber Wolf Alpha","Elder Timber Wolf","Young Timber Wolf",
+  "Nightpelt Grizzly","Moonstrider Fledgling","Moonsilk Moth","Moonsilk Spinner",
+  "Nightpelt Ursa","Moonstrider Rooster","Moonstrider Matriarch",
+  "Duskpaw Huntress","Frenzied Dustwing","Withered Companion (E)",
+  "Frostmane Leopard (E)","Tamed Ice Claw Bear (E)",
+  "Rocktail Scorpid (E)","Venomous Cloudstalker (E)","Ahgk'tos the Pure (E)",
+  "Old Whispershell (R)","Bramblethorn Boar",
+]);
+
+const seen = new Set();
+const DEDUPED = RAW.filter(r => {
+  const key = r[0].toLowerCase();
+  if (seen.has(key)) return false;
+  seen.add(key);
+  return true;
+});
+
+const beasts = DEDUPED.map(r => ({
+  name: r[0],
+  type: r[1],
+  atkspeed: parseFloat(r[2]) || 2,
+  abilities: r[3],
+  location: r[4].replace(/\*+$/, '').trim(),
+  minlevel: r[5] ? parseInt(r[5]) : null,
+  maxlevel: r[6] ? parseInt(r[6]) : null,
+  verified: r[7] === 'TRUE',
+  isRareElite: /\(RE\)/i.test(r[0]),
+  isRare: /\(R\)(?!E)|\(rare\)/i.test(r[0]),
+  isElite: /\(E\)/i.test(r[0]),
+  isUntameable: /untameable/i.test(r[0]),
+  isCustom: CUSTOM_BEASTS.has(r[0]),
+  beastImgUrl: BEAST_IMG[r[0]] || null,
+  locImgUrl: LOC_IMG[r[0]] || null,
+  isSummon: /\(U\)(?!E)/i.test(r[0]),
+  isEliteSummon: /\(UE\)/i.test(r[0]),
+}));
+
+// Populate filter dropdowns
+const types = [...new Set(beasts.map(b => b.type))].sort();
+const typeSelect = document.getElementById('typeFilter');
+types.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; typeSelect.appendChild(o); });
+
+const locations = [...new Set(beasts.map(b => b.location))].sort();
+const locSelect = document.getElementById('locationFilter');
+locations.forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; locSelect.appendChild(o); });
+
+function typeClass(type) {
+  const t = type.toLowerCase();
+  if (t === 'bat') return 'type-bat';
+  if (t === 'bear') return 'type-bear';
+  if (t === 'boar') return 'type-boar';
+  if (t === 'carrion bird') return 'type-carrion';
+  if (t === 'cat') return 'type-cat';
+  if (t === 'crab') return 'type-crab';
+  if (t === 'crocolisk') return 'type-crocolisk';
+  if (t === 'fox') return 'type-fox';
+  if (t === 'gorilla') return 'type-gorilla';
+  if (t === 'hyena') return 'type-hyena';
+  if (t === 'moth') return 'type-moth';
+  if (t === 'owl') return 'type-owl';
+  if (t === 'raptor') return 'type-raptor';
+  if (t === 'scorpid') return 'type-scorpid';
+  if (t.includes('serpent') || t.includes('cobra')) return 'type-serpent';
+  if (t === 'spider') return 'type-spider';
+  if (t === 'tallstrider') return 'type-tallstrider';
+  if (t === 'turtle') return 'type-turtle';
+  if (t === 'wolf') return 'type-wolf';
+  if (t.includes('wind')) return 'type-wind';
+  return 'type-other';
+}
+
+let sortCol = 'minlevel', sortDir = 1;
+
+function levelInRange(beast, range) {
+  if (!range) return true;
+  const lvl = beast.minlevel ?? beast.maxlevel;
+  if (lvl === null) return range === '';
+  if (range === '61+') return lvl >= 61;
+  const [lo, hi] = range.split('-').map(Number);
+  return lvl >= lo && lvl <= hi;
+}
+
+function render() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const typeF = typeSelect.value;
+  const locF = locSelect.value;
+  const levelF = document.getElementById('levelFilter').value;
+  const verifiedOnly = document.getElementById('verifiedOnly').checked;
+  const hideUntameable = document.getElementById('hideUntameable').checked;
+
+  let filtered = beasts.filter(b => {
+    if (hideUntameable && b.isUntameable) return false;
+    if (verifiedOnly && !b.verified) return false;
+    if (typeF && b.type !== typeF) return false;
+    if (locF && b.location !== locF) return false;
+    if (!levelInRange(b, levelF)) return false;
+    if (search && !b.name.toLowerCase().includes(search) && !b.location.toLowerCase().includes(search) && !b.abilities.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  filtered.sort((a, b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    if (av === null) av = -Infinity;
+    if (bv === null) bv = -Infinity;
+    if (typeof av === 'string') return av.localeCompare(bv) * sortDir;
+    return (av - bv) * sortDir;
+  });
+
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+
+  document.getElementById('emptyState').style.display = filtered.length === 0 ? 'block' : 'none';
+  document.getElementById('count').textContent = `${filtered.length} beast${filtered.length !== 1 ? 's' : ''}`;
+
+  filtered.forEach(b => {
+    const tr = document.createElement('tr');
+
+    const nameBadges = (b.isRareElite ? `<span class="badge rare-elite-badge">Rare Elite</span>` : '')
+      + (b.isRare ? `<span class="badge rare-badge">Rare</span>` : '')
+      + (b.isElite ? `<span class="badge elite-badge">Elite</span>` : '')
+      + (b.isUntameable ? `<span class="badge untameable-badge">Untameable</span>` : '')
+      + (b.isSummon ? `<span class="badge summon-badge">Summon</span>` : '')
+      + (b.isEliteSummon ? `<span class="badge elite-summon-badge">Elite Summon</span>` : '');
+
+    const cleanName = b.name
+      .replace(/\s*\(R\)/i, '').replace(/\s*\(rare\)/i, '')
+      .replace(/\s*\(E\)/i, '').replace(/\s*\(untameable\)/i, '')
+      .replace(/\s*\(UE\)/i, '').replace(/\s*\(U\)/i, '')
+      .replace(/\s*\(RE\)/i, '');
+
+    const lvl = b.minlevel !== null
+      ? (b.minlevel === b.maxlevel
+          ? `<span class="level-num">${b.minlevel}</span>`
+          : `<span class="level-num">${b.minlevel}</span> – <span class="level-num">${b.maxlevel}</span>`)
+      : '<span style="color:#555">?</span>';
+
+    tr.innerHTML = `
+      <td>${b.beastImgUrl ? `<span class="beast-link" onclick="openImg('${b.beastImgUrl}','${cleanName.replace(/'/g,"\\'")} — appearance')">${cleanName}</span>` : cleanName}${nameBadges}</td>
+      <td><span class="type-badge ${typeClass(b.type)}">${b.type}</span></td>
+      <td>${b.atkspeed.toFixed(2)}</td>
+      <td class="abilities">${b.abilities === 'None' || b.abilities === '' ? '<span style="color:#555">—</span>' : b.abilities}</td>
+      <td>${b.location}${b.locImgUrl ? ` <span class="map-link" onclick="openImg('${b.locImgUrl}','${b.location.replace(/'/g,"\\'")} — map')" title="View map">🗺</span>` : ''}</td>
+      <td class="level-range">${b.minlevel !== null ? `<span class="level-num">${b.minlevel}</span>` : '<span style="color:#555">?</span>'}</td>
+      <td class="level-range">${b.maxlevel !== null ? `<span class="level-num">${b.maxlevel}</span>` : '<span style="color:#555">?</span>'}</td>
+      <td><span class="badge ${b.verified ? 'check-yes' : 'check-no'}">${b.verified ? 'Yes' : 'No'}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Sort on header click
+document.querySelectorAll('thead th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (sortCol === col) sortDir *= -1;
+    else { sortCol = col; sortDir = 1; }
+    document.querySelectorAll('thead th').forEach(t => t.classList.remove('sorted'));
+    th.classList.add('sorted');
+    th.querySelector('.sort-arrow').textContent = sortDir === 1 ? '↑' : '↓';
+    render();
+  });
+});
+
+['search','typeFilter','locationFilter','levelFilter','verifiedOnly','hideUntameable'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+});
+
+render();
+
+function openImg(url, title) {
+  document.getElementById('img-modal-img').src = url;
+  document.getElementById('img-modal-title').textContent = title;
+  document.getElementById('img-modal').classList.add('open');
+}
+function closeImg() {
+  document.getElementById('img-modal').classList.remove('open');
+  document.getElementById('img-modal-img').src = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeImg(); });
+
+function showPage(page) {
+  document.getElementById('page-beasts').style.display = page === 'beasts' ? '' : 'none';
+  document.getElementById('page-petchanges').style.display = page === 'petchanges' ? '' : 'none';
+  document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.page-tab[onclick="showPage('${page}')"]`).classList.add('active');
+}
+</script>
+</body>
+</html>
